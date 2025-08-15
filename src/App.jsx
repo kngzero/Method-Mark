@@ -1,12 +1,13 @@
 import React from 'react'
 import Slide, { createBlock } from './components/Slide.jsx'
-import BlockToolbar from './components/BlockToolbar.jsx'
-import Checklist from './components/Checklist.jsx'
 import { BLOCK_TYPES } from './constants.js'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-import { parseColor } from './utils/color.js'
 import { GRID_PRESETS, computeGrid } from './utils/grid.js'
+
+function StatusDot({ done }) {
+  return <span className={`statusDot${done ? ' done' : ''}`} />;
+}
 
 const DEFAULT_A4 = { w: 794, h: 1123 };     // px approximation
 const DEFAULT_169 = { w: 1600, h: 900 };    // px
@@ -14,11 +15,24 @@ const DEFAULT_169 = { w: 1600, h: 900 };    // px
 export default function App() {
   const [format, setFormat] = React.useState('A4'); // 'A4' | '16x9'
   const [brandName, setBrandName] = React.useState('Your Brand');
+  const [tagline, setTagline] = React.useState('');
+  const [mission, setMission] = React.useState('');
+  const [vision, setVision] = React.useState('');
+  const [value, setValue] = React.useState('');
+  const [story, setStory] = React.useState('');
+  const [headingFont, setHeadingFont] = React.useState('');
+  const [bodyFont, setBodyFont] = React.useState('');
+  const [colorsList, setColorsList] = React.useState([
+    { name:'Primary', value:'#111827' },
+    { name:'Accent', value:'#4F46E5' },
+    { name:'Neutral', value:'#5E5E7A' }
+  ]);
   const [slides, setSlides] = React.useState([
     { id:'s1', blocks: [] }
   ]);
   const [active, setActive] = React.useState('s1');
   const slideRefs = React.useRef({});
+  const logoRef = React.useRef(null);
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
     const [snap, setSnap] = React.useState(true);
@@ -87,15 +101,6 @@ export default function App() {
     pdf.save(`${brandName.replace(/\s+/g,'_')}_Brand_Guide.pdf`);
   };
 
-  const [palette, setPalette] = React.useState(['hsl(0 0% 10%)', 'hsl(0 0% 40%)', 'hsl(0 0% 70%)']);
-  const addPaletteColor = (value) => {
-    const res = parseColor(value);
-    if (res.ok) setPalette([...palette, res.rgbString]);
-    else alert('Invalid color: '+ value + '\n' + (res.message||''));
-  };
-
-  // Checklist state
-  const [manualChecks, setManualChecks] = React.useState({});
   const autoChecks = React.useMemo(() => {
     const res = {};
     for (const it of BLOCK_TYPES) {
@@ -103,18 +108,53 @@ export default function App() {
     }
     return res;
   }, [slides]);
-  const handleManualChange = (item, checked) => {
-    setManualChecks({ ...manualChecks, [item]: checked });
-  };
-
   const addBlock = (type, extra) => {
     const blk = createBlock(type, grid, extra);
     setSlides(slides.map(s => s.id===active?{...s, blocks:[...(s.blocks||[]), blk]}:s));
   };
+  const addTextBlock = (type, text) => {
+    addBlock(type, { text });
+  };
+  const addColorsBlock = () => {
+    const text = colorsList.map(c => `${c.name}: ${c.value}`).join('\n');
+    addBlock('colors', { text });
+  };
+  const addTypographyBlock = () => {
+    const text = `Heading: ${headingFont}\nBody: ${bodyFont}`;
+    addBlock('typography', { text });
+  };
+  const onLogoFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      addBlock('logo', { url: reader.result });
+      e.target.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+  const loadFont = (name) => {
+    if (!name) return;
+    const id = 'font-' + name.replace(/\s+/g, '-');
+    if (document.getElementById(id)) return;
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${name.replace(/\s+/g,'+')}&display=swap`;
+    document.head.appendChild(link);
+  };
+  const updateColor = (i, field, val) => {
+    setColorsList(colorsList.map((c,idx)=>idx===i?{...c,[field]:val}:c));
+  };
+  const removeColor = (i) => {
+    setColorsList(colorsList.filter((_,idx)=>idx!==i));
+  };
+  const addColorRow = () => {
+    setColorsList([...colorsList, { name:'', value:'' }]);
+  };
 
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
-  const [showChecklist, setShowChecklist] = React.useState(true);
 
     return (
       <div className="app">
@@ -123,44 +163,88 @@ export default function App() {
             <strong>Method Mark</strong>
           </div>
           <div className="row">
-            <button className="btn" onClick={addSlide}>➕ Add Slide</button>
-            <button className="btn" onClick={saveJSON}>💾 Save</button>
+            <button className="btn" onClick={addSlide}>+ Add Slide</button>
+            <button className="btn" onClick={saveJSON}>Save</button>
             <label className="btn">
-              📂 Load
+              Load
               <input type="file" accept="application/json" style={{ display:'none' }} onChange={e => e.target.files[0] && loadJSON(e.target.files[0])} />
             </label>
-            <button className="btn" onClick={()=>alert('Method Mark')}>ℹ️ About</button>
+            <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
           </div>
         </header>
         <div className="workspace" style={{ paddingLeft:leftOpen?220:20, paddingRight:rightOpen?220:20, boxSizing:'border-box' }}>
           {leftOpen ? (
             <aside className="side left">
               <div className="drawerToggle" onClick={()=>setLeftOpen(false)}>◀</div>
-              <h2 style={{ marginTop:0 }}>📄 Content</h2>
+              <h2 style={{ marginTop:0 }}>Content</h2>
               <div className="row" style={{ marginBottom:12 }}>
-                <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} placeholder="Brand name" />
                 <select className="btn" value={format} onChange={e=>setFormat(e.target.value)}>
                   <option value="A4">A4 (portrait)</option>
                   <option value="16x9">16×9 (landscape)</option>
                 </select>
               </div>
-              <BlockToolbar onAdd={addBlock} />
-              <div style={{ marginTop:16 }}>
-                <div className="row">
-                  <input placeholder="Add color (#, rgb, hsl, oklch)" onKeyDown={(e)=>{
-                    if (e.key==='Enter') addPaletteColor(e.currentTarget.value)
-                  }} />
-                  <button className="btn" onClick={()=>{
-                    const val = prompt('Enter a color (#rgb, rgb(), hsl(), oklch())');
-                    if (val) addPaletteColor(val);
-                  }}>➕ Add</button>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Brand Basics</h3>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Brand Name <StatusDot done={autoChecks['name']} /></label>
+                  <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('name', brandName)}>Add</button>
                 </div>
-                <div className="palette">
-                  {palette.map((c,i)=>(
-                    <div key={i} title={c} className="swatch" style={{ background:c }} />
-                  ))}
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Tagline <StatusDot done={autoChecks['tagline']} /></label>
+                  <input type="text" value={tagline} onChange={e=>setTagline(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('tagline', tagline)}>Add</button>
                 </div>
-              </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Mission <StatusDot done={autoChecks['mission']} /></label>
+                  <textarea value={mission} onChange={e=>setMission(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('mission', mission)}>Add</button>
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Vision <StatusDot done={autoChecks['vision']} /></label>
+                  <input type="text" value={vision} onChange={e=>setVision(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('vision', vision)}>Add</button>
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Value <StatusDot done={autoChecks['values']} /></label>
+                  <input type="text" value={value} onChange={e=>setValue(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('values', value)}>Add</button>
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:80 }}>Brand Story <StatusDot done={autoChecks['story']} /></label>
+                  <textarea value={story} onChange={e=>setStory(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={()=>addTextBlock('story', story)}>Add</button>
+                </div>
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Logo <StatusDot done={autoChecks['logo']} /></h3>
+                <button className="btn" onClick={()=>logoRef.current?.click()}>Upload</button>
+                <input type="file" accept="image/*" ref={logoRef} style={{ display:'none' }} onChange={onLogoFile} />
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Colors <StatusDot done={autoChecks['colors']} /></h3>
+                {colorsList.map((c,i)=>(
+                  <div className="row" style={{ marginBottom:8 }} key={i}>
+                    <input placeholder="Name" value={c.name} onChange={e=>updateColor(i,'name',e.target.value)} style={{ flex:1 }} />
+                    <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} style={{ width:80 }} />
+                    <button className="btn" onClick={()=>removeColor(i)}>x</button>
+                  </div>
+                ))}
+                <button className="btn" onClick={addColorRow}>+ Add Color</button>
+                <button className="btn" style={{ marginTop:8 }} onClick={addColorsBlock}>Add Colors Block</button>
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Typography <StatusDot done={autoChecks['typography']} /></h3>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:90 }}>Heading Font</label>
+                  <input value={headingFont} onChange={e=>{setHeadingFont(e.target.value); loadFont(e.target.value);}} style={{ flex:1 }} />
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label style={{ width:90 }}>Body Font</label>
+                  <input value={bodyFont} onChange={e=>{setBodyFont(e.target.value); loadFont(e.target.value);}} style={{ flex:1 }} />
+                </div>
+                <button className="btn" onClick={addTypographyBlock}>Add Typography Block</button>
+              </section>
             </aside>
           ) : (
             <div className="drawerOpener" onClick={()=>setLeftOpen(true)}>▶</div>
@@ -180,8 +264,8 @@ export default function App() {
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
                   <div className="row">
-                    <button className="btn" onClick={()=>duplicateSlide(s)}>📄 Duplicate</button>
-                    <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>🗑️ Delete</button>
+                    <button className="btn" onClick={()=>duplicateSlide(s)}>Duplicate</button>
+                    <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>Delete</button>
                   </div>
                 </div>
               </div>
@@ -191,7 +275,7 @@ export default function App() {
           {rightOpen ? (
             <aside className="side right">
               <div className="drawerToggle" onClick={()=>setRightOpen(false)}>▶</div>
-              <h2 style={{ marginTop:0 }}>⚙️ Settings</h2>
+              <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
                 <label style={{ width:60 }}>Margin</label>
                 <input type="range" min="0" max="200" value={gridSettings.margin} onChange={e=>setGridSettings({...gridSettings, margin:parseInt(e.target.value)||0})} />
@@ -209,15 +293,6 @@ export default function App() {
               </div>
               <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
-              </div>
-              <div style={{ marginTop:24 }}>
-                <div className="row" style={{ justifyContent:'space-between', cursor:'pointer' }} onClick={()=>setShowChecklist(!showChecklist)}>
-                  <h3 style={{ margin:0 }}>Checklist</h3>
-                  <span>{showChecklist ? '▾' : '▸'}</span>
-                </div>
-                {showChecklist && (
-                  <Checklist items={BLOCK_TYPES} auto={autoChecks} manual={manualChecks} onManualChange={handleManualChange} />
-                )}
               </div>
             </aside>
           ) : (
