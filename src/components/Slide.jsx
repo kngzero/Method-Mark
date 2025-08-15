@@ -6,7 +6,12 @@ import ImageBlock from './ImageBlock.jsx';
 import ColorSwatch from './ColorSwatch.jsx';
 import ColorPaletteBlock from './ColorPaletteBlock.jsx';
 
-const snapPos = (v, step, margin) => Math.round((v - margin) / step) * step + margin;
+const snapPos = (v, step, margin, safeMargin, size, max) => {
+  const snapped = Math.round((v - margin) / step) * step + margin;
+  const min = margin + safeMargin;
+  const maxVal = max - margin - safeMargin - size;
+  return Math.min(Math.max(snapped, min), maxVal);
+};
 const snapSize = (v, step, gutter) => {
   const span = Math.max(1, Math.round((v + gutter) / step));
   return span * step - gutter;
@@ -50,12 +55,16 @@ export default function Slide({
       }}
     >
       {blocks.map(b => (
-        <DraggableBlock key={b.id} block={b} grid={grid} snap={snap} onChange={p=>updateBlock(b.id,p)} onRemove={()=>removeBlock(b.id)} />
+        <DraggableBlock
+          key={b.id}
+          block={b}
+          grid={grid}
+          snap={snap}
+          onChange={p => updateBlock(b.id, p)}
+          onRemove={() => removeBlock(b.id)}
+        />
       ))}
-      {showSafeMargin && (
-        <div style={{ position: 'absolute', inset: 0, border: '2px dashed #f00', pointerEvents: 'none' }} />
-      )}
-      <GridOverlay grid={grid} />
+      <GridOverlay grid={grid} showSafeMargin={showSafeMargin} />
     </div>
   );
 }
@@ -72,10 +81,19 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
     e.preventDefault();
   };
   const onMouseMove = (e) => {
+    const { margin, safeMargin, width, height } = grid;
     if (dragging.current) {
       const dx = e.clientX - start.current.x;
       const dy = e.clientY - start.current.y;
-      onChange({ x: start.current.left + dx, y: start.current.top + dy });
+      const x = Math.min(
+        Math.max(start.current.left + dx, margin + safeMargin),
+        width - margin - safeMargin - block.w
+      );
+      const y = Math.min(
+        Math.max(start.current.top + dy, margin + safeMargin),
+        height - margin - safeMargin - block.h
+      );
+      onChange({ x, y });
     } else if (resizing.current) {
       const dx = e.clientX - start.current.x;
       const dy = e.clientY - start.current.y;
@@ -84,15 +102,25 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
   };
   const onMouseUp = () => {
     if (dragging.current || resizing.current) {
-      const { stepX, stepY, margin, gutter } = grid;
+      const { stepX, stepY, margin, gutter, safeMargin, width, height } = grid;
       if (snap) {
         const snapped = {
-          x: snapPos(block.x, stepX, margin),
-          y: snapPos(block.y, stepY, margin),
+          x: snapPos(block.x, stepX, margin, safeMargin, block.w, width),
+          y: snapPos(block.y, stepY, margin, safeMargin, block.h, height),
           w: snapSize(block.w, stepX, gutter),
           h: snapSize(block.h, stepY, gutter)
         };
         onChange(snapped);
+      } else {
+        const x = Math.min(
+          Math.max(block.x, margin + safeMargin),
+          width - margin - safeMargin - block.w
+        );
+        const y = Math.min(
+          Math.max(block.y, margin + safeMargin),
+          height - margin - safeMargin - block.h
+        );
+        onChange({ x, y });
       }
     }
     dragging.current = false;
@@ -140,8 +168,10 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
 }
 
 export function createBlock(type, grid, extra = {}) {
-  const { margin, stepX, stepY, gutter } = grid;
+  const { margin, safeMargin, stepX, stepY, gutter } = grid;
   const w = snapSize(200, stepX, gutter);
   const h = snapSize(80, stepY, gutter);
-  return { id:newId(), type, x:margin, y:margin, w, h, ...extra };
+  const x = margin + safeMargin;
+  const y = margin + safeMargin;
+  return { id: newId(), type, x, y, w, h, ...extra };
 }

@@ -421,6 +421,32 @@ export default function App() {
                 <input type="number" value={boardPadding} onChange={e=>setBoardPadding(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:80 }}>Safe margin</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="200"
+                  value={gridSettings.safeMargin}
+                  onChange={e =>
+                    setGridSettings({
+                      ...gridSettings,
+                      safeMargin: parseInt(e.target.value) || 0
+                    })
+                  }
+                />
+                <input
+                  type="number"
+                  value={gridSettings.safeMargin}
+                  onChange={e =>
+                    setGridSettings({
+                      ...gridSettings,
+                      safeMargin: parseInt(e.target.value) || 0
+                    })
+                  }
+                  style={{ width:60 }}
+                />
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
               </div>
               <div className="row" style={{ marginBottom:12 }}>
