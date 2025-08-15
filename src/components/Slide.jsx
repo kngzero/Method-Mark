@@ -20,6 +20,8 @@ const snapSize = (v, step, gutter) => {
 let idCounter = 1;
 const newId = () => 'blk_' + idCounter++;
 
+const HEADING_TYPES = new Set(['name', 'tagline']);
+
 export default function Slide({
   blocks,
   onChange,
@@ -29,7 +31,9 @@ export default function Slide({
   roundedCorners,
   softShadow,
   showSafeMargin,
-  backgroundColor
+  backgroundColor,
+  headingFont,
+  bodyFont
 }) {
   const [selectedId, setSelectedId] = React.useState(null);
   const updateBlock = (id, patch) => {
@@ -66,6 +70,7 @@ export default function Slide({
           onSelect={() => setSelectedId(b.id)}
           onChange={p => updateBlock(b.id, p)}
           onRemove={() => removeBlock(b.id)}
+          fontFamily={b.fontFamily || (HEADING_TYPES.has(b.type) ? headingFont : bodyFont)}
         />
       ))}
       <GridOverlay grid={grid} showSafeMargin={showSafeMargin} />
@@ -73,7 +78,7 @@ export default function Slide({
   );
 }
 
-function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSelect }) {
+function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSelect, fontFamily }) {
   const ref = React.useRef(null);
   const dragging = React.useRef(false);
   const resizing = React.useRef(false);
@@ -215,7 +220,7 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSel
       ) : block.type === 'colors' ? (
         <ColorPaletteBlock colors={block.colors || []} />
       ) : (
-        <TextBox text={block.text || block.type} onChange={text => onChange({ text })} />
+        <TextBox text={block.text || block.type} fontFamily={fontFamily} onChange={text => onChange({ text })} />
       )}
       <div className="handle" onMouseDown={onResizeDown}>⤡</div>
       <button
