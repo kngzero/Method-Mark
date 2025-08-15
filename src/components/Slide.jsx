@@ -15,7 +15,17 @@ const snapSize = (v, step, gutter) => {
 let idCounter = 1;
 const newId = () => 'blk_' + idCounter++;
 
-export default function Slide({ blocks, onChange, grid, snap }) {
+export default function Slide({
+  blocks,
+  onChange,
+  grid,
+  snap,
+  boardPadding,
+  roundedCorners,
+  softShadow,
+  showSafeMargin,
+  backgroundColor
+}) {
   const updateBlock = (id, patch) => {
     const next = blocks.map(b => (b.id === id ? { ...b, ...patch } : b));
     onChange(next);
@@ -26,10 +36,25 @@ export default function Slide({ blocks, onChange, grid, snap }) {
   };
 
   return (
-    <div className="slideCanvas" style={{ position:'relative', width:'100%', height:'100%' }}>
+    <div
+      className="slideCanvas"
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        padding: boardPadding,
+        boxSizing: 'border-box',
+        background: backgroundColor,
+        borderRadius: roundedCorners ? 12 : 0,
+        boxShadow: softShadow ? '0 0 0 1px #0003, 0 8px 20px #0002' : '0 0 0 1px #0003'
+      }}
+    >
       {blocks.map(b => (
         <DraggableBlock key={b.id} block={b} grid={grid} snap={snap} onChange={p=>updateBlock(b.id,p)} onRemove={()=>removeBlock(b.id)} />
       ))}
+      {showSafeMargin && (
+        <div style={{ position: 'absolute', inset: 0, border: '2px dashed #f00', pointerEvents: 'none' }} />
+      )}
       <GridOverlay grid={grid} />
     </div>
   );

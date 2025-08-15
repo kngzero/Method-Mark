@@ -42,13 +42,29 @@ export default function App() {
   const [genericColorValue, setGenericColorValue] = React.useState('#000000');
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
-    const [snap, setSnap] = React.useState(true);
-    const [gridSettings, setGridSettings] = React.useState(() => ({ ...GRID_PRESETS['A4'] }));
-    const grid = computeGrid(format, dim.w, dim.h, gridSettings);
+  const [snap, setSnap] = React.useState(true);
+  const [gridSettings, setGridSettings] = React.useState(() => {
+    const { margin, ...rest } = GRID_PRESETS['A4'];
+    return rest;
+  });
+  const [boardPadding, setBoardPadding] = React.useState(GRID_PRESETS['A4'].margin);
+  const [roundedCorners, setRoundedCorners] = React.useState(false);
+  const [softShadow, setSoftShadow] = React.useState(false);
+  const [showSafeMargin, setShowSafeMargin] = React.useState(false);
+  const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
+  const [exportFormat, setExportFormat] = React.useState('png');
+  const grid = computeGrid(
+    format,
+    dim.w - boardPadding * 2,
+    dim.h - boardPadding * 2,
+    { ...gridSettings, margin: 0 }
+  );
 
-    React.useEffect(() => {
-      setGridSettings({ ...GRID_PRESETS[format] });
-    }, [format]);
+  React.useEffect(() => {
+    const { margin, ...rest } = GRID_PRESETS[format];
+    setGridSettings(rest);
+    setBoardPadding(margin);
+  }, [format]);
 
     const addSlide = () => {
       const id = 's'+(slides.length+1);
@@ -90,12 +106,23 @@ export default function App() {
     reader.readAsText(file);
   };
 
+  const saveImage = React.useCallback(async () => {
+    const node = slideRefs.current[active];
+    if (!node) return;
+    const canvas = await html2canvas(node, { backgroundColor, scale: 2 });
+    const mime = exportFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
+    const link = document.createElement('a');
+    link.download = `${brandName.replace(/\s+/g,'_')}.${exportFormat}`;
+    link.href = canvas.toDataURL(mime);
+    link.click();
+  }, [active, backgroundColor, brandName, exportFormat]);
+
   const exportPDF = async () => {
     const pages = [];
     for (const s of slides) {
       const node = slideRefs.current[s.id];
       if (!node) continue;
-      const canvas = await html2canvas(node, { backgroundColor: '#ffffff', scale: 2 });
+      const canvas = await html2canvas(node, { backgroundColor, scale: 2 });
       pages.push(canvas.toDataURL('image/png'));
     }
     // PDF size in px units
@@ -107,6 +134,17 @@ export default function App() {
     });
     pdf.save(`${brandName.replace(/\s+/g,'_')}_Brand_Guide.pdf`);
   };
+
+  React.useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveImage();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [saveImage]);
 
   const autoChecks = React.useMemo(() => {
     const res = {};
@@ -211,11 +249,6 @@ export default function App() {
           </div>
           <div className="row">
             <button className="btn" onClick={addSlide}>+ Add Slide</button>
-            <button className="btn" onClick={saveJSON}>Save</button>
-            <label className="btn">
-              Load
-              <input type="file" accept="application/json" style={{ display:'none' }} onChange={e => e.target.files[0] && loadJSON(e.target.files[0])} />
-            </label>
             <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
           </div>
         </header>
@@ -340,7 +373,17 @@ export default function App() {
                   style={{ width: dim.w, height: dim.h }}
                 >
                   <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
-                  <Slide blocks={s.blocks || []} grid={grid} snap={snap} onChange={b=>setSlideBlocks(s.id,b)} />
+                  <Slide
+                    blocks={s.blocks || []}
+                    grid={grid}
+                    snap={snap}
+                    boardPadding={boardPadding}
+                    roundedCorners={roundedCorners}
+                    softShadow={softShadow}
+                    showSafeMargin={showSafeMargin}
+                    backgroundColor={backgroundColor}
+                    onChange={b=>setSlideBlocks(s.id,b)}
+                  />
                 </div>
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
@@ -358,23 +401,59 @@ export default function App() {
               <div className="drawerToggle" onClick={()=>setRightOpen(false)}>▶</div>
               <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:60 }}>Margin</label>
-                <input type="range" min="0" max="200" value={gridSettings.margin} onChange={e=>setGridSettings({...gridSettings, margin:parseInt(e.target.value)||0})} />
-                <input type="number" value={gridSettings.margin} onChange={e=>setGridSettings({...gridSettings, margin:parseInt(e.target.value)||0})} style={{ width:60 }} />
-              </div>
-              <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:60 }}>Gutter</label>
-                <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
-                <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
-              </div>
-              <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:60 }}>Columns</label>
+                <label style={{ width:80 }}>Columns</label>
                 <input type="range" min="1" max="24" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:80 }}>Gaps</label>
+                <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
+                <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:80 }}>Board padding</label>
+                <input type="range" min="0" max="200" value={boardPadding} onChange={e=>setBoardPadding(parseInt(e.target.value)||0)} />
+                <input type="number" value={boardPadding} onChange={e=>setBoardPadding(parseInt(e.target.value)||0)} style={{ width:60 }} />
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
               </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label><input type="checkbox" checked={roundedCorners} onChange={e=>setRoundedCorners(e.target.checked)} /> Rounded corners</label>
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label><input type="checkbox" checked={softShadow} onChange={e=>setSoftShadow(e.target.checked)} /> Soft shadow</label>
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label><input type="checkbox" checked={showSafeMargin} onChange={e=>setShowSafeMargin(e.target.checked)} /> Show safe margin</label>
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:80 }}>Background</label>
+                <input type="color" value={backgroundColor} onChange={e=>setBackgroundColor(e.target.value)} />
+              </div>
+
+              <section style={{ marginTop:24 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Project</h3>
+                <div className="row" style={{ gap:8 }}>
+                  <button className="btn" onClick={saveJSON}>Save</button>
+                  <label className="btn">
+                    Load
+                    <input type="file" accept="application/json" style={{ display:'none' }} onChange={e=>e.target.files[0] && loadJSON(e.target.files[0])} />
+                  </label>
+                </div>
+              </section>
+
+              <section style={{ marginTop:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Export</h3>
+                <div className="row" style={{ marginBottom:8, gap:8 }}>
+                  <select className="btn" value={exportFormat} onChange={e=>setExportFormat(e.target.value)} style={{ flex:1 }}>
+                    <option value="png">PNG</option>
+                    <option value="jpeg">JPEG</option>
+                  </select>
+                  <button className="btn" onClick={saveImage}>Save</button>
+                </div>
+                <button className="btn" onClick={exportPDF}>Save as PDF</button>
+              </section>
             </aside>
           ) : (
             <div className="drawerOpener right" onClick={()=>setRightOpen(true)}>◀</div>
