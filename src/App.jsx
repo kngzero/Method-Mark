@@ -204,15 +204,17 @@ export default function App() {
     const blk = createBlock(type, grid, extra);
     setSlides(slides.map(s => s.id===active?{...s, blocks:[...(s.blocks||[]), blk]}:s));
   };
+  const headingTypes = React.useMemo(() => new Set(['name', 'tagline']), []);
   const addTextBlock = (type, text) => {
-    addBlock(type, { text });
+    const fontFamily = headingTypes.has(type) ? headingFont : bodyFont;
+    addBlock(type, { text, fontFamily });
   };
   const addColorsBlock = () => {
     addBlock('colors', { colors: colorsList });
   };
   const addTypographyBlock = () => {
     const text = `Heading: ${headingFont}\nBody: ${bodyFont}`;
-    addBlock('typography', { text });
+    addBlock('typography', { text, fontFamily: bodyFont });
   };
   const onLogoFile = (e) => {
     const file = e.target.files[0];
@@ -458,6 +460,8 @@ export default function App() {
                     showSafeMargin={showSafeMargin}
                     backgroundColor={backgroundColor}
                     onChange={b=>setSlideBlocks(s.id,b)}
+                    headingFont={headingFont}
+                    bodyFont={bodyFont}
                   />
                 </div>
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
