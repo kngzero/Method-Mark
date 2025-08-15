@@ -4,6 +4,7 @@ import FreeformBoard from './components/FreeformBoard.jsx'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { parseColor } from './utils/color.js'
+import { computeGrid } from './utils/grid.js'
 
 const DEFAULT_A4 = { w: 794, h: 1123 };     // px approximation
 const DEFAULT_169 = { w: 1600, h: 900 };    // px
@@ -19,6 +20,7 @@ export default function App() {
   const slideRefs = React.useRef({});
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
+  const grid = computeGrid(format, dim.w, dim.h);
 
   const addSlide = (type='freeform') => {
     const id = 's'+(slides.length+1);
@@ -113,8 +115,8 @@ export default function App() {
                 <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName} • {s.type === 'brand' ? 'Brand Board' : 'Freeform Board'}</div>
 
                 {/* Page content */}
-                {s.type === 'brand' && <BrandBoard data={s.data} onUpdate={(d)=>setSlideData(s.id, d)} />}
-                {s.type === 'freeform' && <FreeformBoard data={s.data} onUpdate={(d)=>setSlideData(s.id, d)} />}
+                {s.type === 'brand' && <BrandBoard data={s.data} grid={grid} onUpdate={(d)=>setSlideData(s.id, d)} />}
+                {s.type === 'freeform' && <FreeformBoard data={s.data} grid={grid} onUpdate={(d)=>setSlideData(s.id, d)} />}
 
                 {/* Footer palette preview */}
                 <div style={{ position:'absolute', left:16, bottom:12, display:'flex', gap:8 }}>

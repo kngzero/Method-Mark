@@ -1,17 +1,34 @@
 import React from 'react'
 import { sanitizeColor } from '../utils/color.js'
+import GridOverlay from './GridOverlay.jsx'
+
+const snapPos = (v, step, margin) => Math.round((v - margin) / step) * step + margin;
+const snapSize = (v, step, gutter) => {
+  const span = Math.max(1, Math.round((v + gutter) / step));
+  return span * step - gutter;
+};
 
 let idCounter = 1;
 const newId = () => 'item_' + idCounter++;
 
-export default function FreeformBoard({ data, onUpdate }) {
+export default function FreeformBoard({ data, onUpdate, grid }) {
   const boardRef = React.useRef(null);
 
   const addImage = (file) => {
     const reader = new FileReader();
     reader.onload = () => {
       const url = reader.result;
-      const item = { id: newId(), type: 'image', url, x: 40, y: 40, w: 240, h: 180 };
+      const stepX = grid.stepX;
+      const stepY = grid.stepY;
+      const item = {
+        id: newId(),
+        type: 'image',
+        url,
+        x: snapPos(40, stepX, grid.margin),
+        y: snapPos(40, stepY, grid.margin),
+        w: snapSize(240, stepX, grid.gutter),
+        h: snapSize(180, stepY, grid.gutter)
+      };
       onUpdate({ ...data, items: [...(data.items || []), item] });
     };
     reader.readAsDataURL(file);
@@ -20,7 +37,17 @@ export default function FreeformBoard({ data, onUpdate }) {
   const addSwatch = (value) => {
     const s = sanitizeColor(value);
     if (s.ok) {
-      const item = { id: newId(), type: 'swatch', value: s.value, x: 60, y: 60, size: 80 };
+      const stepX = grid.stepX;
+      const stepY = grid.stepY;
+      const size = snapSize(80, Math.min(stepX, stepY), grid.gutter);
+      const item = {
+        id: newId(),
+        type: 'swatch',
+        value: s.value,
+        x: snapPos(60, stepX, grid.margin),
+        y: snapPos(60, stepY, grid.margin),
+        size
+      };
       onUpdate({ ...data, items: [...(data.items || []), item] });
     } else {
       alert('Invalid color: ' + value + '\n' + (s.message || ''));
@@ -54,9 +81,16 @@ export default function FreeformBoard({ data, onUpdate }) {
       onDragOver={onDragOver}
     >
       {(data.items || []).map(it => (
-        <DraggableItem key={it.id} item={it} onChange={patch => updateItem(it.id, patch)} onRemove={() => removeItem(it.id)} />
+        <DraggableItem
+          key={it.id}
+          item={it}
+          grid={grid}
+          onChange={patch => updateItem(it.id, patch)}
+          onRemove={() => removeItem(it.id)}
+        />
       ))}
 
+      <GridOverlay grid={grid} />
       <Toolbar onAddImage={(file)=>addImage(file)} onAddSwatch={(val)=>addSwatch(val)} />
     </div>
   );
@@ -82,7 +116,7 @@ function Toolbar({ onAddImage, onAddSwatch }) {
   );
 }
 
-function DraggableItem({ item, onChange, onRemove }) {
+function DraggableItem({ item, onChange, onRemove, grid }) {
   const ref = React.useRef(null);
   const dragging = React.useRef(false);
   const resizing = React.useRef(false);
@@ -104,7 +138,24 @@ function DraggableItem({ item, onChange, onRemove }) {
       onChange({ w: Math.max(40, start.current.w + dx), h: Math.max(40, start.current.h + dy) });
     }
   };
-  const onMouseUp = () => { dragging.current = false; resizing.current = false; };
+  const onMouseUp = () => {
+    if (dragging.current || resizing.current) {
+      const stepX = grid.stepX;
+      const stepY = grid.stepY;
+      const margin = grid.margin;
+      const gutter = grid.gutter;
+      const snapped = {
+        x: snapPos(item.x, stepX, margin),
+        y: snapPos(item.y, stepY, margin)
+      };
+      if (item.w) snapped.w = snapSize(item.w, stepX, gutter);
+      if (item.h) snapped.h = snapSize(item.h, stepY, gutter);
+      if (item.size) snapped.size = snapSize(item.size, Math.min(stepX, stepY), gutter);
+      onChange(snapped);
+    }
+    dragging.current = false;
+    resizing.current = false;
+  };
   const onResizeDown = (e) => {
     resizing.current = true;
     start.current = { x: e.clientX, y: e.clientY, w: item.w || 80, h: item.h || 80, left: 0, top: 0 };

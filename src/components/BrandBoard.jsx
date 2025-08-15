@@ -1,10 +1,11 @@
 import React from 'react'
+import GridOverlay from './GridOverlay.jsx'
 
 /**
  * A fixed grid brand board (like the screenshot).
  * Users can click a tile to upload an image, or insert a palette (colors).
  */
-export default function BrandBoard({ onUpdate, data }) {
+export default function BrandBoard({ onUpdate, data, grid }) {
   const inputRef = React.useRef(null);
   const [activeSlot, setActiveSlot] = React.useState(null);
 
@@ -37,7 +38,7 @@ export default function BrandBoard({ onUpdate, data }) {
 
   // 4-column grid with specific tile spans
   return (
-    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:'8px', padding:'12px', height:'100%', boxSizing:'border-box' }}>
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:'8px', padding:'12px', height:'100%', boxSizing:'border-box', position:'relative' }}>
       {/* Top: 3 small bars for Brand Colors (we'll map palette on export) */}
       <div className="tile" style={{gridColumn:'1 / 2', height:40, display:'flex', alignItems:'center', justifyContent:'center'}}>Brand Colors</div>
       <div className="tile" style={{gridColumn:'2 / 3', height:40, display:'flex', alignItems:'center', justifyContent:'center'}}>Brand Colors</div>
@@ -55,6 +56,7 @@ export default function BrandBoard({ onUpdate, data }) {
       <Tile k="brandMark" title="Brand Mark" style={{ gridColumn:'2 / 3', gridRow:'5 / 6', height: 92 }} />
 
       <input type="file" ref={inputRef} style={{ display:'none' }} accept="image/*" onChange={onFile} />
+      {grid && <GridOverlay grid={grid} />}
     </div>
   );
 }
