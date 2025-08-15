@@ -33,6 +33,13 @@ export default function App() {
   const [active, setActive] = React.useState('s1');
   const slideRefs = React.useRef({});
   const logoRef = React.useRef(null);
+  const imageryRef = React.useRef(null);
+  const iconRef = React.useRef(null);
+  const genericImageRef = React.useRef(null);
+  const [voiceTone, setVoiceTone] = React.useState('');
+  const [genericText, setGenericText] = React.useState('');
+  const [genericColorName, setGenericColorName] = React.useState('');
+  const [genericColorValue, setGenericColorValue] = React.useState('#000000');
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
     const [snap, setSnap] = React.useState(true);
@@ -116,8 +123,7 @@ export default function App() {
     addBlock(type, { text });
   };
   const addColorsBlock = () => {
-    const text = colorsList.map(c => `${c.name}: ${c.value}`).join('\n');
-    addBlock('colors', { text });
+    addBlock('colors', { colors: colorsList });
   };
   const addTypographyBlock = () => {
     const text = `Heading: ${headingFont}\nBody: ${bodyFont}`;
@@ -132,6 +138,47 @@ export default function App() {
       e.target.value = '';
     };
     reader.readAsDataURL(file);
+  };
+  const onImageryFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      addBlock('imagery', { url: reader.result });
+      e.target.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+  const onIconFile = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      addBlock('iconography', { url: reader.result });
+      e.target.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+  const onGenericImage = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      addBlock('image', { url: reader.result });
+      e.target.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+  const addVoiceToneBlock = () => {
+    addTextBlock('voice & tone', voiceTone);
+  };
+  const addGenericTextBlock = () => {
+    addTextBlock('textbox', genericText);
+    setGenericText('');
+  };
+  const addGenericSwatch = () => {
+    addBlock('color-swatch', { label: genericColorName, color: genericColorValue });
+    setGenericColorName('');
   };
   const loadFont = (name) => {
     if (!name) return;
@@ -244,6 +291,40 @@ export default function App() {
                   <input value={bodyFont} onChange={e=>{setBodyFont(e.target.value); loadFont(e.target.value);}} style={{ flex:1 }} />
                 </div>
                 <button className="btn" onClick={addTypographyBlock}>Add Typography Block</button>
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Imagery & Iconography</h3>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <button className="btn" onClick={()=>imageryRef.current?.click()}>Add Imagery</button>
+                  <input type="file" accept="image/*" ref={imageryRef} style={{ display:'none' }} onChange={onImageryFile} />
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <button className="btn" onClick={()=>iconRef.current?.click()}>Add Icon</button>
+                  <input type="file" accept="image/*" ref={iconRef} style={{ display:'none' }} onChange={onIconFile} />
+                </div>
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Voice & Tone <StatusDot done={autoChecks['voice & tone']} /></h3>
+                <textarea value={voiceTone} onChange={e=>setVoiceTone(e.target.value)} style={{ width:'100%', marginBottom:8 }} />
+                <button className="btn" onClick={addVoiceToneBlock}>Add</button>
+              </section>
+              <section style={{ marginBottom:16 }}>
+                <h3 style={{ margin:0, marginBottom:8 }}>Generic Components</h3>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <input placeholder="Text" value={genericText} onChange={e=>setGenericText(e.target.value)} style={{ flex:1 }} />
+                  <button className="btn" onClick={addGenericTextBlock}>Add Text</button>
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <label className="btn" style={{ flex:1, textAlign:'center' }}>
+                    Add Image
+                    <input type="file" accept="image/*" ref={genericImageRef} style={{ display:'none' }} onChange={onGenericImage} />
+                  </label>
+                </div>
+                <div className="row" style={{ marginBottom:8 }}>
+                  <input placeholder="Label" value={genericColorName} onChange={e=>setGenericColorName(e.target.value)} style={{ flex:1 }} />
+                  <input type="color" value={genericColorValue} onChange={e=>setGenericColorValue(e.target.value)} />
+                  <button className="btn" onClick={addGenericSwatch}>Add Swatch</button>
+                </div>
               </section>
             </aside>
           ) : (

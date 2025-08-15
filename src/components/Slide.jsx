@@ -1,6 +1,10 @@
 import React from 'react';
 import GridOverlay from './GridOverlay.jsx';
 import { IMAGE_BLOCKS } from '../constants.js';
+import TextBox from './TextBox.jsx';
+import ImageBlock from './ImageBlock.jsx';
+import ColorSwatch from './ColorSwatch.jsx';
+import ColorPaletteBlock from './ColorPaletteBlock.jsx';
 
 const snapPos = (v, step, margin) => Math.round((v - margin) / step) * step + margin;
 const snapSize = (v, step, gutter) => {
@@ -87,21 +91,25 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
   return (
     <div
       ref={ref}
-      style={{ position:'absolute', left:block.x, top:block.y, width:block.w, height:block.h, background:'#fff', boxShadow:'0 0 0 1px #0003, 0 8px 20px #0002', cursor:'grab' }}
+      style={{ position: 'absolute', left: block.x, top: block.y, width: block.w, height: block.h, background: '#fff', boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002', cursor: 'grab' }}
       onMouseDown={onMouseDown}
     >
       {IMAGE_BLOCKS.includes(block.type) ? (
-        block.url && <img src={block.url} alt={block.type} style={{ width:'100%', height:'100%', objectFit:'cover' }} />
+        block.url && <ImageBlock url={block.url} alt={block.type} />
+      ) : block.type === 'color-swatch' ? (
+        <ColorSwatch color={block.color} label={block.label} />
+      ) : block.type === 'colors' ? (
+        <ColorPaletteBlock colors={block.colors || []} />
       ) : (
-        <div
-          contentEditable
-          suppressContentEditableWarning
-          style={{ width:'100%', height:'100%', padding:8, boxSizing:'border-box' }}
-          onBlur={e=>onChange({ text: e.target.innerText })}
-        >{block.text || block.type}</div>
+        <TextBox text={block.text || block.type} onChange={text => onChange({ text })} />
       )}
       <div className="handle" onMouseDown={onResizeDown}>⤡</div>
-      <button onClick={onRemove} style={{ position:'absolute', right:6, top:6, background:'#eee', color:'#333', border:'1px solid #ccc', borderRadius:4, padding:'2px 6px', cursor:'pointer' }}>×</button>
+      <button
+        onClick={onRemove}
+        style={{ position: 'absolute', right: 6, top: 6, background: '#eee', color: '#333', border: '1px solid #ccc', borderRadius: 4, padding: '2px 6px', cursor: 'pointer' }}
+      >
+        ×
+      </button>
     </div>
   );
 }
