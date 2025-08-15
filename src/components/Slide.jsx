@@ -31,6 +31,7 @@ export default function Slide({
   showSafeMargin,
   backgroundColor
 }) {
+  const [selectedId, setSelectedId] = React.useState(null);
   const updateBlock = (id, patch) => {
     const next = blocks.map(b => (b.id === id ? { ...b, ...patch } : b));
     onChange(next);
@@ -43,6 +44,7 @@ export default function Slide({
   return (
     <div
       className="slideCanvas"
+      onMouseDown={e => { if (e.target === e.currentTarget) setSelectedId(null); }}
       style={{
         position: 'relative',
         width: '100%',
@@ -60,6 +62,8 @@ export default function Slide({
           block={b}
           grid={grid}
           snap={snap}
+          selected={selectedId === b.id}
+          onSelect={() => setSelectedId(b.id)}
           onChange={p => updateBlock(b.id, p)}
           onRemove={() => removeBlock(b.id)}
         />
@@ -69,7 +73,7 @@ export default function Slide({
   );
 }
 
-function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
+function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSelect }) {
   const ref = React.useRef(null);
   const dragging = React.useRef(false);
   const resizing = React.useRef(false);
@@ -78,6 +82,8 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
   const onMouseDown = (e) => {
     dragging.current = true;
     start.current = { x: e.clientX, y: e.clientY, w: block.w, h: block.h, left: block.x, top: block.y };
+    onSelect();
+    ref.current && ref.current.focus();
     e.preventDefault();
   };
   const onMouseMove = (e) => {
@@ -130,6 +136,50 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
     e.stopPropagation(); e.preventDefault();
   };
 
+  const onKeyDown = (e) => {
+    const { stepX, stepY, margin, safeMargin, width, height } = grid;
+    let x = block.x;
+    let y = block.y;
+    let w = block.w;
+    let h = block.h;
+    let handled = false;
+    if (e.key === 'ArrowLeft') {
+      handled = true;
+      if (e.shiftKey) {
+        w = Math.max(stepX, w - stepX);
+      } else {
+        x -= stepX;
+      }
+    } else if (e.key === 'ArrowRight') {
+      handled = true;
+      if (e.shiftKey) {
+        w = Math.min(width - margin - safeMargin - x, w + stepX);
+      } else {
+        x += stepX;
+      }
+    } else if (e.key === 'ArrowUp') {
+      handled = true;
+      if (e.shiftKey) {
+        h = Math.max(stepY, h - stepY);
+      } else {
+        y -= stepY;
+      }
+    } else if (e.key === 'ArrowDown') {
+      handled = true;
+      if (e.shiftKey) {
+        h = Math.min(height - margin - safeMargin - y, h + stepY);
+      } else {
+        y += stepY;
+      }
+    }
+    if (handled) {
+      e.preventDefault();
+      x = Math.min(Math.max(x, margin + safeMargin), width - margin - safeMargin - w);
+      y = Math.min(Math.max(y, margin + safeMargin), height - margin - safeMargin - h);
+      onChange({ x, y, w, h });
+    }
+  };
+
   React.useEffect(() => {
     window.addEventListener('mousemove', onMouseMove);
     window.addEventListener('mouseup', onMouseUp);
@@ -142,7 +192,20 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
   return (
     <div
       ref={ref}
-      style={{ position: 'absolute', left: block.x, top: block.y, width: block.w, height: block.h, background: '#fff', boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002', cursor: 'grab' }}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      onFocus={onSelect}
+      style={{
+        position: 'absolute',
+        left: block.x,
+        top: block.y,
+        width: block.w,
+        height: block.h,
+        background: '#fff',
+        boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002',
+        cursor: 'grab',
+        outline: selected ? '2px solid #2684FF' : 'none'
+      }}
       onMouseDown={onMouseDown}
     >
       {IMAGE_BLOCKS.includes(block.type) ? (
