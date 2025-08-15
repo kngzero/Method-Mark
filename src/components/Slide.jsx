@@ -102,23 +102,21 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
   };
   const onMouseUp = () => {
     if (dragging.current || resizing.current) {
-      const { stepX, stepY, margin, gutter, safeMargin, width, height } = grid;
+      const { stepX, stepY, margin, gutter, width, height } = grid;
       if (snap) {
-        const snapped = {
-          x: snapPos(block.x, stepX, margin, safeMargin, block.w, width),
-          y: snapPos(block.y, stepY, margin, safeMargin, block.h, height),
-          w: snapSize(block.w, stepX, gutter),
-          h: snapSize(block.h, stepY, gutter)
-        };
-        onChange(snapped);
+        const w = snapSize(block.w, stepX, gutter);
+        const h = snapSize(block.h, stepY, gutter);
+        const x = snapPos(block.x, stepX, margin, 0, w, width);
+        const y = snapPos(block.y, stepY, margin, 0, h, height);
+        onChange({ x, y, w, h });
       } else {
         const x = Math.min(
-          Math.max(block.x, margin + safeMargin),
-          width - margin - safeMargin - block.w
+          Math.max(block.x, margin),
+          width - margin - block.w
         );
         const y = Math.min(
-          Math.max(block.y, margin + safeMargin),
-          height - margin - safeMargin - block.h
+          Math.max(block.y, margin),
+          height - margin - block.h
         );
         onChange({ x, y });
       }
@@ -168,10 +166,12 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap }) {
 }
 
 export function createBlock(type, grid, extra = {}) {
-  const { margin, safeMargin, stepX, stepY, gutter } = grid;
-  const w = snapSize(200, stepX, gutter);
-  const h = snapSize(80, stepY, gutter);
-  const x = margin + safeMargin;
-  const y = margin + safeMargin;
-  return { id: newId(), type, x, y, w, h, ...extra };
+  const { margin, safeMargin, stepX, stepY, gutter, width, height } = grid;
+  const w = snapSize(extra.w ?? 200, stepX, gutter);
+  const h = snapSize(extra.h ?? 80, stepY, gutter);
+  let x = extra.x ?? margin + safeMargin;
+  let y = extra.y ?? margin + safeMargin;
+  x = Math.min(Math.max(x, margin), width - margin - w);
+  y = Math.min(Math.max(y, margin), height - margin - h);
+  return { id: newId(), type, ...extra, w, h, x, y };
 }
