@@ -406,6 +406,11 @@ export default function App() {
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:80 }}>Rows</label>
+                <input type="range" min="1" max="24" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} />
+                <input type="number" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} style={{ width:60 }} />
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
                 <label style={{ width:80 }}>Gaps</label>
                 <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
