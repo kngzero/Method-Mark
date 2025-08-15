@@ -83,6 +83,36 @@ export default function App() {
       setSlides(slides.map(s => s.id===id?{...s, blocks}:s));
     };
 
+    const moveSlide = (from, to) => {
+      setSlides(prev => {
+        const updated = [...prev];
+        const [item] = updated.splice(from, 1);
+        updated.splice(to, 0, item);
+        return updated;
+      });
+    };
+
+    const moveSlideUp = (i) => {
+      if (i > 0) moveSlide(i, i - 1);
+    };
+
+    const moveSlideDown = (i) => {
+      if (i < slides.length - 1) moveSlide(i, i + 1);
+    };
+
+    const onDragStartSlide = (i) => (e) => {
+      e.dataTransfer.setData('text/plain', i);
+      e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const onDropSlide = (i) => (e) => {
+      e.preventDefault();
+      const from = parseInt(e.dataTransfer.getData('text/plain'), 10);
+      if (!isNaN(from) && from !== i) {
+        moveSlide(from, i);
+      }
+    };
+
   const saveJSON = () => {
     const blob = new Blob([JSON.stringify({ brandName, format, slides }, null, 2)], { type:'application/json' });
     const a = document.createElement('a');
@@ -379,8 +409,14 @@ export default function App() {
           )}
 
           <div className="canvasWrap">
-            {slides.map(s => (
-              <div key={s.id} onClick={()=>setActive(s.id)} style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}>
+            {slides.map((s, i) => (
+              <div
+                key={s.id}
+                onClick={() => setActive(s.id)}
+                onDragOver={e => e.preventDefault()}
+                onDrop={onDropSlide(i)}
+                style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}
+              >
                 <div
                   className="slide"
                   ref={el => (slideRefs.current[s.id] = el)}
@@ -401,7 +437,18 @@ export default function App() {
                 </div>
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
-                  <div className="row">
+                  <div className="row" style={{ gap:4 }}>
+                    <button
+                      className="btn"
+                      draggable
+                      onDragStart={onDragStartSlide(i)}
+                      aria-label="Drag to reorder"
+                      style={{ cursor:'grab' }}
+                    >
+                      ☰
+                    </button>
+                    <button className="btn" onClick={()=>moveSlideUp(i)} aria-label="Move slide up">↑</button>
+                    <button className="btn" onClick={()=>moveSlideDown(i)} aria-label="Move slide down">↓</button>
                     <button className="btn" onClick={()=>duplicateSlide(s)}>Duplicate</button>
                     <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>Delete</button>
                   </div>
