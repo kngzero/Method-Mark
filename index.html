@@ -7,27 +7,23 @@
     <style>
       html, body, #root { height: 100%; margin: 0; }
       body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background:#f5f5f5; color:#222; }
-      .toolbar { position: sticky; top: 0; background: #f0f0f0; padding: 12px; display: flex; gap: 8px; align-items: center; border-bottom:1px solid #ccc; z-index: 20; }
-      .toolbar input[type="text"] { padding:6px 8px; min-width: 220px; }
       .btn { padding:8px 12px; background:#e0e0e0; border:1px solid #ccc; color:#111; border-radius:6px; cursor:pointer; }
       .btn:hover { background:#d5d5d5; }
-      .canvasWrap { display:flex; gap:16px; padding:16px; flex-wrap: wrap; }
+      .header { position:fixed; top:0; left:0; right:0; background:#fff; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; padding:8px 16px; z-index:40; }
+      .workspace { display:flex; height:calc(100% - 52px); margin-top:52px; }
+      .canvasWrap { flex:1; display:flex; gap:16px; padding:16px; flex-wrap:wrap; justify-content:center; overflow:auto; }
       .slide { background:#fff; color:#111; border-radius:8px; box-shadow: 0 0 0 1px #ccc inset; position: relative; }
-      .label { font-size: 12px; color: #888; }
-      .panel { background:#f9f9f9; border-left:1px solid #ddd; padding:12px; width: 320px; overflow:auto; }
-      .app { display:grid; grid-template-columns: 1fr 320px; height: calc(100% - 0px); }
-      .row { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
-      .swatch { width: 24px; height: 24px; border:1px solid #0002; border-radius:4px; display:inline-block; vertical-align: middle; }
-      .tile { border:1px solid #ddd; position:relative; overflow:hidden; background:#f2f2f2; }
-      .tile .title { position:absolute; left:8px; top:8px; font-size:12px; color:#333; background:#fff8; padding:2px 6px; border-radius:4px; }
-      .tile img { width: 100%; height: 100%; object-fit: cover; }
-      .dropzone { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#777; font-weight:500; font-size:14px;}
-      .handle { position:absolute; right:6px; bottom:6px; background:#fff; color:#333; font-size:12px; padding:2px 6px; border-radius:4px; border:1px solid #ccc; }
-      .item { position:absolute; cursor:grab; }
-      .palette { display:flex; gap:6px; flex-wrap: wrap; }
+      .side { background:#f9f9f9; padding:12px; width:220px; overflow:auto; position:relative; }
+      .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+      .swatch { width:24px; height:24px; border:1px solid #0002; border-radius:4px; }
+      .palette { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
       .small { font-size:12px; color:#aaa; }
-      .blockToolbar { display:flex; flex-direction:column; gap:8px; width:140px; }
+      .blockToolbar { display:flex; flex-direction:column; gap:8px; }
       .blockToolbar .btn { width:100%; text-transform:capitalize; }
+      .drawerOpener { width:20px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; cursor:pointer; border-right:1px solid #ddd; }
+      .drawerOpener.right { border-right:none; border-left:1px solid #ddd; }
+      .drawerToggle { position:absolute; top:8px; right:8px; width:24px; height:24px; background:#e0e0e0; border:1px solid #ccc; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+      .handle { position:absolute; right:6px; bottom:6px; background:#fff; color:#333; font-size:12px; padding:2px 6px; border-radius:4px; border:1px solid #ccc; }
     </style>
   </head>
   <body>

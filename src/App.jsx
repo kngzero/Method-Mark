@@ -101,83 +101,103 @@ export default function App() {
     setSlides(slides.map(s => s.id===active?{...s, blocks:[...(s.blocks||[]), blk]}:s));
   };
 
+  const [leftOpen, setLeftOpen] = React.useState(true);
+  const [rightOpen, setRightOpen] = React.useState(true);
+  const [showChecklist, setShowChecklist] = React.useState(true);
+
   return (
     <div className="app">
-      <div>
-        <div className="toolbar">
-          <div className="row">
-            <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} placeholder="Brand name" />
-            <select className="btn" value={format} onChange={e=>setFormat(e.target.value)}>
-              <option value="A4">A4 (portrait)</option>
-              <option value="16x9">16×9 (landscape)</option>
-            </select>
-            <button className="btn" onClick={addSlide}>+ Slide</button>
-            <button className="btn" onClick={exportPDF}>Export PDF</button>
-            <button className="btn" onClick={saveJSON}>Save JSON</button>
-            <label className="btn">
-              Load JSON
-              <input type="file" accept="application/json" style={{ display:'none' }} onChange={e => e.target.files[0] && loadJSON(e.target.files[0])} />
-            </label>
-          </div>
-        </div>
-
-        {/* Canvas area */}
-        <div className="canvasArea" style={{ display:'flex', gap:16, padding:16 }}>
-          <BlockToolbar onAdd={addBlock} />
-          <div className="canvasWrap">
-            {slides.map(s => (
-              <div key={s.id} onClick={()=>setActive(s.id)} style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}>
-                <div
-                  className="slide"
-                  ref={el => (slideRefs.current[s.id] = el)}
-                  style={{ width: dim.w, height: dim.h }}
-                >
-                  <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
-                  <Slide blocks={s.blocks || []} grid={grid} snap={snap} onChange={b=>setSlideBlocks(s.id,b)} />
-                  <div style={{ position:'absolute', left:16, bottom:12, display:'flex', gap:8 }}>
-                    {palette.map((c,i)=> <div key={i} title={c} className="swatch" style={{ background:c }} />)}
-                  </div>
-                </div>
-                <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
-                  <span className="small">Slide: {s.id}</span>
-                  <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>Delete</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Side Panel */}
-      <aside className="panel">
-        <div className="row" style={{ marginBottom:12 }}>
-          <label>Margin <input type="number" value={gridSettings.margin} onChange={e=>setGridSettings({...gridSettings, margin:parseInt(e.target.value)||0})} style={{ width:60 }} /></label>
-          <label>Gutter <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} /></label>
-        </div>
-        <div className="row" style={{ marginBottom:12 }}>
-          <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
+      <header className="header">
+        <div className="row" style={{ gap:12 }}>
+          <strong>Method Mark</strong>
+          <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} placeholder="Brand name" />
+          <select className="btn" value={format} onChange={e=>setFormat(e.target.value)}>
+            <option value="A4">A4 (portrait)</option>
+            <option value="16x9">16×9 (landscape)</option>
+          </select>
         </div>
         <div className="row">
-          <input placeholder="Add color (#, rgb, hsl, oklch)" onKeyDown={(e)=>{
-            if (e.key==='Enter') addPaletteColor(e.currentTarget.value)
-          }} />
-          <button className="btn" onClick={()=>{
-            const val = prompt('Enter a color (#rgb, rgb(), hsl(), oklch())');
-            if (val) addPaletteColor(val);
-          }}>+ Add</button>
+          <button className="btn" onClick={addSlide}>Add Slide</button>
+          <button className="btn" onClick={saveJSON}>Save</button>
+          <label className="btn">
+            Load
+            <input type="file" accept="application/json" style={{ display:'none' }} onChange={e => e.target.files[0] && loadJSON(e.target.files[0])} />
+          </label>
+          <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
         </div>
-        <div style={{ marginTop:12 }}>
-          <div className="label">Palette</div>
-          <div className="palette">
-            {palette.map((c,i)=>(
-              <div key={i} title={c} className="swatch" style={{ background:c }} />
-            ))}
-          </div>
+      </header>
+      <div className="workspace">
+        {leftOpen ? (
+          <aside className="side">
+            <div className="drawerToggle" onClick={()=>setLeftOpen(false)}>◀</div>
+            <BlockToolbar onAdd={addBlock} />
+            <div style={{ marginTop:16 }}>
+              <div className="row">
+                <input placeholder="Add color (#, rgb, hsl, oklch)" onKeyDown={(e)=>{
+                  if (e.key==='Enter') addPaletteColor(e.currentTarget.value)
+                }} />
+                <button className="btn" onClick={()=>{
+                  const val = prompt('Enter a color (#rgb, rgb(), hsl(), oklch())');
+                  if (val) addPaletteColor(val);
+                }}>+ Add</button>
+              </div>
+              <div className="palette">
+                {palette.map((c,i)=>(
+                  <div key={i} title={c} className="swatch" style={{ background:c }} />
+                ))}
+              </div>
+            </div>
+          </aside>
+        ) : (
+          <div className="drawerOpener" onClick={()=>setLeftOpen(true)}>▶</div>
+        )}
+
+        <div className="canvasWrap">
+          {slides.map(s => (
+            <div key={s.id} onClick={()=>setActive(s.id)} style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}>
+              <div
+                className="slide"
+                ref={el => (slideRefs.current[s.id] = el)}
+                style={{ width: dim.w, height: dim.h }}
+              >
+                <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
+                <Slide blocks={s.blocks || []} grid={grid} snap={snap} onChange={b=>setSlideBlocks(s.id,b)} />
+                <div style={{ position:'absolute', left:16, bottom:12, display:'flex', gap:8 }}>
+                  {palette.map((c,i)=> <div key={i} title={c} className="swatch" style={{ background:c }} />)}
+                </div>
+              </div>
+              <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
+                <span className="small">Slide: {s.id}</span>
+                <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>Delete</button>
+              </div>
+            </div>
+          ))}
         </div>
-        <div style={{ marginTop:24 }}>
-          <Checklist items={BLOCK_TYPES} auto={autoChecks} manual={manualChecks} onManualChange={handleManualChange} />
-        </div>
-      </aside>
+
+        {rightOpen ? (
+          <aside className="side">
+            <div className="drawerToggle" onClick={()=>setRightOpen(false)}>▶</div>
+            <div className="row" style={{ marginBottom:12 }}>
+              <label>Margin <input type="number" value={gridSettings.margin} onChange={e=>setGridSettings({...gridSettings, margin:parseInt(e.target.value)||0})} style={{ width:60 }} /></label>
+              <label>Gutter <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} /></label>
+            </div>
+            <div className="row" style={{ marginBottom:12 }}>
+              <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
+            </div>
+            <div style={{ marginTop:24 }}>
+              <div className="row" style={{ justifyContent:'space-between', cursor:'pointer' }} onClick={()=>setShowChecklist(!showChecklist)}>
+                <h3 style={{ margin:0 }}>Checklist</h3>
+                <span>{showChecklist ? '▾' : '▸'}</span>
+              </div>
+              {showChecklist && (
+                <Checklist items={BLOCK_TYPES} auto={autoChecks} manual={manualChecks} onManualChange={handleManualChange} />
+              )}
+            </div>
+          </aside>
+        ) : (
+          <div className="drawerOpener right" onClick={()=>setRightOpen(true)}>◀</div>
+        )}
+      </div>
     </div>
   );
 }
