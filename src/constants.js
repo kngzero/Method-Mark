@@ -14,7 +14,11 @@ export const BLOCK_TYPES = [
   'layout',
   'voice & tone',
   'applications',
-  'accessibility'
+  'accessibility',
+  // Generic components
+  'textbox',
+  'image',
+  'color-swatch'
 ];
 
-export const IMAGE_BLOCKS = ['logo','imagery','iconography'];
+export const IMAGE_BLOCKS = ['logo', 'imagery', 'iconography', 'image'];
