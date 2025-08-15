@@ -1,4 +1,4 @@
-# Method Guide – Brand PDF Builder (MVP)
+# Method Mark – Brand PDF Builder (MVP)
 
 A lightweight React app to assemble brand boards and export a multi-page PDF in **A4** or **16×9**. Slide 1 provides a fixed brand board grid. Slide 2 is a freeform canvas where you can drag in images or color swatches. Colors accept `#hex`, `rgb[a]`, `hsl[a]`, and `oklch`/`oklab` (auto-converted to sRGB).
 
