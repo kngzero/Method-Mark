@@ -255,7 +255,14 @@ export default function App() {
         <div className="workspace" style={{ paddingLeft:leftOpen?220:20, paddingRight:rightOpen?220:20, boxSizing:'border-box' }}>
           {leftOpen ? (
             <aside className="side left">
-              <div className="drawerToggle" onClick={()=>setLeftOpen(false)}>◀</div>
+              <button
+                type="button"
+                className="drawerToggle"
+                aria-label="Close content panel"
+                onClick={() => setLeftOpen(false)}
+              >
+                ◀
+              </button>
               <h2 style={{ marginTop:0 }}>Content</h2>
               <div className="row" style={{ marginBottom:12 }}>
                 <select className="btn" value={format} onChange={e=>setFormat(e.target.value)}>
@@ -361,7 +368,14 @@ export default function App() {
               </section>
             </aside>
           ) : (
-            <div className="drawerOpener" onClick={()=>setLeftOpen(true)}>▶</div>
+            <button
+              type="button"
+              className="drawerOpener"
+              aria-label="Open content panel"
+              onClick={() => setLeftOpen(true)}
+            >
+              ▶
+            </button>
           )}
 
           <div className="canvasWrap">
@@ -398,7 +412,14 @@ export default function App() {
 
           {rightOpen ? (
             <aside className="side right">
-              <div className="drawerToggle" onClick={()=>setRightOpen(false)}>▶</div>
+              <button
+                type="button"
+                className="drawerToggle"
+                aria-label="Close settings panel"
+                onClick={() => setRightOpen(false)}
+              >
+                ▶
+              </button>
               <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
                 <label style={{ width:80 }}>Columns</label>
@@ -487,7 +508,14 @@ export default function App() {
               </section>
             </aside>
           ) : (
-            <div className="drawerOpener right" onClick={()=>setRightOpen(true)}>◀</div>
+            <button
+              type="button"
+              className="drawerOpener right"
+              aria-label="Open settings panel"
+              onClick={() => setRightOpen(true)}
+            >
+              ◀
+            </button>
           )}
       </div>
     </div>
