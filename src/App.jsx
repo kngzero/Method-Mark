@@ -30,6 +30,23 @@ export default function App() {
   const [slides, setSlides] = React.useState([
     { id:'s1', blocks: [] }
   ]);
+  // undo/redo stub
+  const undoStack = React.useRef([]);
+  const redoStack = React.useRef([]);
+  const undo = () => {
+    const prev = undoStack.current.pop();
+    if (prev) {
+      redoStack.current.push(slides);
+      setSlides(prev);
+    }
+  };
+  const redo = () => {
+    const next = redoStack.current.pop();
+    if (next) {
+      undoStack.current.push(slides);
+      setSlides(next);
+    }
+  };
   const [active, setActive] = React.useState('s1');
   const slideRefs = React.useRef({});
   const logoRef = React.useRef(null);
@@ -271,6 +288,14 @@ export default function App() {
   const [leftOpen, setLeftOpen] = React.useState(true);
   const [rightOpen, setRightOpen] = React.useState(true);
 
+  const deleteSlide = (id) => {
+    if (!window.confirm('Delete this slide?')) return;
+    // store previous state for potential undo
+    undoStack.current.push(slides);
+    redoStack.current = [];
+    setSlides(slides.filter(x => x.id !== id));
+  };
+
     return (
       <div className="app">
         <header className="header">
@@ -450,7 +475,7 @@ export default function App() {
                     <button className="btn" onClick={()=>moveSlideUp(i)} aria-label="Move slide up">↑</button>
                     <button className="btn" onClick={()=>moveSlideDown(i)} aria-label="Move slide down">↓</button>
                     <button className="btn" onClick={()=>duplicateSlide(s)}>Duplicate</button>
-                    <button className="btn" onClick={()=>setSlides(slides.filter(x=>x.id!==s.id))}>Delete</button>
+                    <button className="btn" onClick={() => deleteSlide(s.id)}>Delete</button>
                   </div>
                 </div>
               </div>
