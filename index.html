@@ -6,23 +6,23 @@
     <title>Method Mark – Brand PDF Builder</title>
     <style>
       html, body, #root { height: 100%; margin: 0; }
-      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background:#0b0b0c; color:#e9e9ef; }
-      .toolbar { position: sticky; top: 0; background: #111; padding: 12px; display: flex; gap: 8px; align-items: center; border-bottom:1px solid #2a2a32; z-index: 20; }
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background:#f5f5f5; color:#222; }
+      .toolbar { position: sticky; top: 0; background: #f0f0f0; padding: 12px; display: flex; gap: 8px; align-items: center; border-bottom:1px solid #ccc; z-index: 20; }
       .toolbar input[type="text"] { padding:6px 8px; min-width: 220px; }
-      .btn { padding:8px 12px; background:#1e1e27; border:1px solid #2e2e3a; color:#f5f5fa; border-radius:6px; cursor:pointer; }
-      .btn:hover { background:#2a2a36; }
+      .btn { padding:8px 12px; background:#e0e0e0; border:1px solid #ccc; color:#111; border-radius:6px; cursor:pointer; }
+      .btn:hover { background:#d5d5d5; }
       .canvasWrap { display:flex; gap:16px; padding:16px; flex-wrap: wrap; }
-      .slide { background:#fff; color:#111; border-radius:8px; box-shadow: 0 0 0 1px #333 inset; position: relative; }
+      .slide { background:#fff; color:#111; border-radius:8px; box-shadow: 0 0 0 1px #ccc inset; position: relative; }
       .label { font-size: 12px; color: #888; }
-      .panel { background:#111218; border-left:1px solid #2a2a32; padding:12px; width: 320px; overflow:auto; }
+      .panel { background:#f9f9f9; border-left:1px solid #ddd; padding:12px; width: 320px; overflow:auto; }
       .app { display:grid; grid-template-columns: 1fr 320px; height: calc(100% - 0px); }
       .row { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
       .swatch { width: 24px; height: 24px; border:1px solid #0002; border-radius:4px; display:inline-block; vertical-align: middle; }
-      .tile { border:1px solid #000; position:relative; overflow:hidden; background:#f2f2f2; }
+      .tile { border:1px solid #ddd; position:relative; overflow:hidden; background:#f2f2f2; }
       .tile .title { position:absolute; left:8px; top:8px; font-size:12px; color:#333; background:#fff8; padding:2px 6px; border-radius:4px; }
       .tile img { width: 100%; height: 100%; object-fit: cover; }
-      .dropzone { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#555; font-weight:500; font-size:14px;}
-      .handle { position:absolute; right:6px; bottom:6px; background:#0007; color:#fff; font-size:12px; padding:2px 6px; border-radius:4px; }
+      .dropzone { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#777; font-weight:500; font-size:14px;}
+      .handle { position:absolute; right:6px; bottom:6px; background:#fff; color:#333; font-size:12px; padding:2px 6px; border-radius:4px; border:1px solid #ccc; }
       .item { position:absolute; cursor:grab; }
       .palette { display:flex; gap:6px; flex-wrap: wrap; }
       .small { font-size:12px; color:#aaa; }

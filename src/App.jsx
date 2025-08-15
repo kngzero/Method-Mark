@@ -74,7 +74,7 @@ export default function App() {
   };
 
   // Inspector panel – brand colors input (accept OKLCH)
-  const [palette, setPalette] = React.useState(['#111827', 'oklch(62% 0.19 244)', 'hsl(12 80% 60%)']);
+  const [palette, setPalette] = React.useState(['hsl(0 0% 10%)', 'hsl(0 0% 40%)', 'hsl(0 0% 70%)']);
   const addPaletteColor = (value) => {
     const res = parseColor(value);
     if (res.ok) setPalette([...palette, res.rgbString]);
@@ -105,7 +105,7 @@ export default function App() {
         {/* Canvas area */}
         <div className="canvasWrap">
           {slides.map(s => (
-            <div key={s.id} onClick={()=>setActive(s.id)} style={{ border: s.id===active?'2px solid #61dafb':'2px solid transparent', borderRadius:10, padding:6, background:'#191a22' }}>
+            <div key={s.id} onClick={()=>setActive(s.id)} style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}>
               <div
                 className="slide"
                 ref={el => (slideRefs.current[s.id] = el)}

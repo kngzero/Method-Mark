@@ -98,7 +98,7 @@ export default function FreeformBoard({ data, onUpdate, grid }) {
 
 function Toolbar({ onAddImage, onAddSwatch }) {
   const fileRef = React.useRef(null);
-  const [color, setColor] = React.useState('oklch(62% 0.19 244)');
+  const [color, setColor] = React.useState('hsl(0 0% 50%)');
 
   const pick = () => fileRef.current?.click();
   const onFile = (e) => {
@@ -107,7 +107,7 @@ function Toolbar({ onAddImage, onAddSwatch }) {
   };
 
   return (
-    <div style={{ position:'absolute', right:12, top:12, background:'#111c', color:'#fff', padding:8, borderRadius:8, display:'flex', gap:8, alignItems:'center' }}>
+    <div style={{ position:'absolute', right:12, top:12, background:'#fff', color:'#333', padding:8, borderRadius:8, display:'flex', gap:8, alignItems:'center', border:'1px solid #ccc' }}>
       <button className="btn" onClick={pick}>+ Image</button>
       <input type="file" ref={fileRef} style={{ display:'none' }} accept="image/*" onChange={onFile} />
       <input value={color} onChange={e=>setColor(e.target.value)} placeholder="hex/rgb/hsl/oklch" style={{ padding:'6px 8px', width:200 }} />
@@ -181,7 +181,7 @@ function DraggableItem({ item, onChange, onRemove, grid }) {
       {item.type === 'image' && <img src={item.url} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} />}
       {item.type === 'swatch' && <div style={{ width:'100%', height:'100%', background:item.value }} />}
       <div className="handle" onMouseDown={onResizeDown}>⤡</div>
-      <button onClick={onRemove} style={{ position:'absolute', right:6, top:6, background:'#0007', color:'#fff', border:'none', borderRadius:4, padding:'2px 6px', cursor:'pointer' }}>×</button>
+      <button onClick={onRemove} style={{ position:'absolute', right:6, top:6, background:'#eee', color:'#333', border:'1px solid #ccc', borderRadius:4, padding:'2px 6px', cursor:'pointer' }}>×</button>
     </div>
   );
 }
