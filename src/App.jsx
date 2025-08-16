@@ -40,6 +40,8 @@ export default function App() {
   const [genericText, setGenericText] = React.useState('');
   const [genericColorName, setGenericColorName] = React.useState('');
   const [genericColorValue, setGenericColorValue] = React.useState('#000000');
+  const canvasWrapRef = React.useRef(null);
+  const fitZoom = React.useRef(1);
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
   const [snap, setSnap] = React.useState(true);
@@ -51,6 +53,7 @@ export default function App() {
   const [showSafeMargin, setShowSafeMargin] = React.useState(false);
   const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
   const [exportFormat, setExportFormat] = React.useState('png');
+  const [zoom, setZoom] = React.useState(1);
   // History stack for undo/redo
   const history = React.useRef([]);
   const future = React.useRef([]);
@@ -80,6 +83,7 @@ export default function App() {
         slideMargin,
         showSafeMargin,
         backgroundColor,
+        zoom,
       })
     );
 
@@ -105,6 +109,7 @@ export default function App() {
     setSlideMargin(s.slideMargin);
     setShowSafeMargin(s.showSafeMargin);
     setBackgroundColor(s.backgroundColor);
+    setZoom(s.zoom ?? 1);
   };
 
   const undo = () => {
@@ -153,6 +158,7 @@ export default function App() {
     slideMargin,
     showSafeMargin,
     backgroundColor,
+    zoom,
   ]);
 
   React.useEffect(() => {
@@ -181,6 +187,19 @@ export default function App() {
     setGridSettings(rest);
     setSlideMargin(margin);
   }, [format]);
+
+  React.useEffect(() => {
+    const computeFitZoom = () => {
+      if (!canvasWrapRef.current) return;
+      const { clientWidth, clientHeight } = canvasWrapRef.current;
+      const z = Math.min(clientWidth / dim.w, clientHeight / dim.h);
+      fitZoom.current = z;
+      setZoom(prev => (prev > z ? z : prev));
+    };
+    computeFitZoom();
+    window.addEventListener('resize', computeFitZoom);
+    return () => window.removeEventListener('resize', computeFitZoom);
+  }, [dim.w, dim.h]);
 
     const addSlide = () => {
       const id = 's'+(slides.length+1);
@@ -435,32 +454,32 @@ export default function App() {
               <section style={{ marginBottom:16 }}>
                 <h3 style={{ margin:0, marginBottom:8 }}>Brand Basics</h3>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Brand Name <StatusDot done={autoChecks['name']} /></label>
+                  <label style={{ width:'100%' }}>Brand Name <StatusDot done={autoChecks['name']} /></label>
                   <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('name', brandName)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Tagline <StatusDot done={autoChecks['tagline']} /></label>
+                  <label style={{ width:'100%' }}>Tagline <StatusDot done={autoChecks['tagline']} /></label>
                   <input type="text" value={tagline} onChange={e=>setTagline(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('tagline', tagline)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Mission <StatusDot done={autoChecks['mission']} /></label>
+                  <label style={{ width:'100%' }}>Mission <StatusDot done={autoChecks['mission']} /></label>
                   <textarea value={mission} onChange={e=>setMission(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('mission', mission)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Vision <StatusDot done={autoChecks['vision']} /></label>
+                  <label style={{ width:'100%' }}>Vision <StatusDot done={autoChecks['vision']} /></label>
                   <input type="text" value={vision} onChange={e=>setVision(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('vision', vision)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Value <StatusDot done={autoChecks['values']} /></label>
+                  <label style={{ width:'100%' }}>Value <StatusDot done={autoChecks['values']} /></label>
                   <input type="text" value={value} onChange={e=>setValue(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('values', value)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:100% }}>Brand Story <StatusDot done={autoChecks['story']} /></label>
+                  <label style={{ width:'100%' }}>Brand Story <StatusDot done={autoChecks['story']} /></label>
                   <textarea value={story} onChange={e=>setStory(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('story', story)}>Add</button>
                 </div>
@@ -475,7 +494,7 @@ export default function App() {
                 {colorsList.map((c,i)=>(
                   <div className="row" style={{ marginBottom:8 }} key={i}>
                     <input placeholder="Name" value={c.name} onChange={e=>updateColor(i,'name',e.target.value)} style={{ flex:1 }} />
-                    <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} style={{ width:100% }} />
+                    <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} style={{ width:'100%' }} />
                     <button className="btn" onClick={()=>removeColor(i)}>x</button>
                   </div>
                 ))}
@@ -538,34 +557,37 @@ export default function App() {
             >
               ▶
             </button>
-          )}
+        )}
 
-          <div className="canvasWrap">
-            {slides.map((s, i) => (
-              <div
-                key={s.id}
+        <div className="canvasWrap" ref={canvasWrapRef}>
+          {slides.map((s, i) => (
+            <div
+              key={s.id}
                 onClick={() => setActive(s.id)}
                 onDragOver={e => e.preventDefault()}
                 onDrop={onDropSlide(i)}
                 style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}
               >
-                <div
-                  className="slide"
-                  ref={el => (slideRefs.current[s.id] = el)}
-                  style={{ width: dim.w, height: dim.h }}
-                >
-                  <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
-                  <Slide
-                    blocks={s.blocks || []}
-                    grid={grid}
-                    snap={snap}
-                    slideMargin={slideMargin}
-                    showSafeMargin={showSafeMargin}
-                    backgroundColor={backgroundColor}
-                    onChange={b=>setSlideBlocks(s.id,b)}
-                    headingFont={headingFont}
-                    bodyFont={bodyFont}
-                  />
+                <div className="slideWrapper" style={{ width: dim.w * zoom, height: dim.h * zoom }}>
+                  <div
+                    className="slide"
+                    ref={el => (slideRefs.current[s.id] = el)}
+                    style={{ width: dim.w, height: dim.h, transform:`scale(${zoom})`, transformOrigin:'top left' }}
+                  >
+                    <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
+                    <Slide
+                      blocks={s.blocks || []}
+                      grid={grid}
+                      snap={snap}
+                      slideMargin={slideMargin}
+                      showSafeMargin={showSafeMargin}
+                      backgroundColor={backgroundColor}
+                      onChange={b=>setSlideBlocks(s.id,b)}
+                      headingFont={headingFont}
+                      bodyFont={bodyFont}
+                      zoom={zoom}
+                    />
+                  </div>
                 </div>
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
@@ -601,27 +623,27 @@ export default function App() {
               </button>
               <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Columns</label>
+                <label style={{ width:'100%' }}>Columns</label>
                 <input type="range" min="1" max="24" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Rows</label>
+                <label style={{ width:'100%' }}>Rows</label>
                 <input type="range" min="1" max="24" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Gaps</label>
+                <label style={{ width:'100%' }}>Gaps</label>
                 <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Slide Margins</label>
+                <label style={{ width:'100%' }}>Slide Margins</label>
                 <input type="range" min="0" max="200" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} />
                 <input type="number" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Safe Margin</label>
+                <label style={{ width:'100%' }}>Safe Margin</label>
                 <input
                   type="range"
                   min="0"
@@ -647,6 +669,12 @@ export default function App() {
                 />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:'100%' }}>Zoom</label>
+                <input type="range" min="0.25" max="2" step="0.05" value={zoom} onChange={e=>setZoom(parseFloat(e.target.value))} />
+                <input type="number" value={zoom} step="0.05" onChange={e=>setZoom(parseFloat(e.target.value) || 1)} style={{ width:60 }} />
+                <button className="btn" onClick={() => setZoom(fitZoom.current)}>Fit</button>
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
               </div>
               
@@ -654,7 +682,7 @@ export default function App() {
                 <label><input type="checkbox" checked={showSafeMargin} onChange={e=>setShowSafeMargin(e.target.checked)} /> Show safe margin</label>
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:100% }}>Background</label>
+                <label style={{ width:'100%' }}>Background</label>
                 <input type="color" value={backgroundColor} onChange={e=>setBackgroundColor(e.target.value)} />
               </div>
 

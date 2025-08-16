@@ -23,16 +23,17 @@ const newId = () => 'blk_' + idCounter++;
 const HEADING_TYPES = new Set(['name', 'tagline']);
 
 export default function Slide({
-  blocks,
-  onChange,
-  grid,
-  snap,
-  slideMargin,
-  showSafeMargin,
-  backgroundColor,
-  headingFont,
-  bodyFont
-}) {
+    blocks,
+    onChange,
+    grid,
+    snap,
+    slideMargin,
+    showSafeMargin,
+    backgroundColor,
+    headingFont,
+    bodyFont,
+    zoom = 1
+  }) {
   const [selectedId, setSelectedId] = React.useState(null);
   const updateBlock = (id, patch) => {
     const next = blocks.map(b => (b.id === id ? { ...b, ...patch } : b));
@@ -58,25 +59,26 @@ export default function Slide({
         boxShadow: '0 0 0 1px #0003'
       }}
     >
-      {blocks.map(b => (
-        <DraggableBlock
-          key={b.id}
-          block={b}
-          grid={grid}
-          snap={snap}
-          selected={selectedId === b.id}
-          onSelect={() => setSelectedId(b.id)}
-          onChange={p => updateBlock(b.id, p)}
-          onRemove={() => removeBlock(b.id)}
-          fontFamily={b.fontFamily || (HEADING_TYPES.has(b.type) ? headingFont : bodyFont)}
-        />
-      ))}
+        {blocks.map(b => (
+          <DraggableBlock
+            key={b.id}
+            block={b}
+            grid={grid}
+            snap={snap}
+            selected={selectedId === b.id}
+            onSelect={() => setSelectedId(b.id)}
+            onChange={p => updateBlock(b.id, p)}
+            onRemove={() => removeBlock(b.id)}
+            fontFamily={b.fontFamily || (HEADING_TYPES.has(b.type) ? headingFont : bodyFont)}
+            zoom={zoom}
+          />
+        ))}
       <GridOverlay grid={grid} showSafeMargin={showSafeMargin} />
     </div>
   );
 }
 
-function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSelect, fontFamily }) {
+  function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSelect, fontFamily, zoom = 1 }) {
   const ref = React.useRef(null);
   const dragging = React.useRef(false);
   const resizing = React.useRef(false);
@@ -90,10 +92,10 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSel
     e.preventDefault();
   };
   const onMouseMove = (e) => {
-    const { margin, safeMargin, width, height } = grid;
-    if (dragging.current) {
-      const dx = e.clientX - start.current.x;
-      const dy = e.clientY - start.current.y;
+      const { margin, safeMargin, width, height } = grid;
+      if (dragging.current) {
+        const dx = (e.clientX - start.current.x) / zoom;
+        const dy = (e.clientY - start.current.y) / zoom;
       const x = Math.min(
         Math.max(start.current.left + dx, margin + safeMargin),
         width - margin - safeMargin - block.w
@@ -103,11 +105,11 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSel
         height - margin - safeMargin - block.h
       );
       onChange({ x, y });
-    } else if (resizing.current) {
-      const dx = e.clientX - start.current.x;
-      const dy = e.clientY - start.current.y;
-      onChange({ w: Math.max(40, start.current.w + dx), h: Math.max(40, start.current.h + dy) });
-    }
+      } else if (resizing.current) {
+        const dx = (e.clientX - start.current.x) / zoom;
+        const dy = (e.clientY - start.current.y) / zoom;
+        onChange({ w: Math.max(40, start.current.w + dx), h: Math.max(40, start.current.h + dy) });
+      }
   };
   const onMouseUp = () => {
     if (dragging.current || resizing.current) {
