@@ -16,6 +16,7 @@ export default function GridOverlay({ grid, showSafeMargin }) {
     position: 'absolute',
     inset: 0,
     pointerEvents: 'none',
+    zIndex: 20,
   };
   const bgImages = [
     `repeating-linear-gradient(to right, #ddd, #ddd 1px, transparent 1px, transparent ${stepX}px)`,
