@@ -1,22 +1,41 @@
 import React from 'react';
 
 export default function GridOverlay({ grid, showSafeMargin }) {
-  const { margin, safeMargin = 0, stepX, stepY, width, height } = grid;
+  const {
+    margin,
+    safeMargin = 0,
+    stepX,
+    stepY,
+    moduleW,
+    moduleH,
+    gutter,
+    width,
+    height,
+  } = grid;
   const style = {
     position: 'absolute',
     inset: 0,
     pointerEvents: 'none',
   };
+  const bgImages = [
+    `repeating-linear-gradient(to right, #ddd, #ddd 1px, transparent 1px, transparent ${stepX}px)`,
+    `repeating-linear-gradient(to bottom, #ddd, #ddd 1px, transparent 1px, transparent ${stepY}px)`
+  ];
+  if (gutter > 0) {
+    bgImages.push(
+      `repeating-linear-gradient(to right, transparent, transparent ${moduleW}px, rgba(0,0,0,0.05) ${moduleW}px, rgba(0,0,0,0.05) ${stepX}px)`,
+      `repeating-linear-gradient(to bottom, transparent, transparent ${moduleH}px, rgba(0,0,0,0.05) ${moduleH}px, rgba(0,0,0,0.05) ${stepY}px)`
+    );
+  }
   const innerStyle = {
     position: 'absolute',
     left: margin,
     top: margin,
     width: width - margin * 2,
     height: height - margin * 2,
-    backgroundSize: `${stepX}px ${stepY}px`,
-    backgroundImage:
-      `linear-gradient(to right, #ddd 1px, transparent 1px),` +
-      `linear-gradient(to bottom, #ddd 1px, transparent 1px)`,
+    boxSizing: 'border-box',
+    backgroundImage: bgImages.join(','),
+    border: '1px solid #ccc',
   };
   const safeOffset = margin + safeMargin;
   const safeStyle = {

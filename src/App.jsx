@@ -177,9 +177,9 @@ export default function App() {
 
   const grid = computeGrid(
     format,
-    dim.w - slideMargin * 2,
-    dim.h - slideMargin * 2,
-    { ...gridSettings, margin: 0 }
+    dim.w,
+    dim.h,
+    { ...gridSettings, margin: slideMargin }
   );
 
   React.useEffect(() => {
