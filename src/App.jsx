@@ -77,9 +77,7 @@ export default function App() {
         genericColorValue,
         snap,
         gridSettings,
-        boardPadding,
-        roundedCorners,
-        softShadow,
+        slideMargin,
         showSafeMargin,
         backgroundColor,
       })
@@ -104,9 +102,7 @@ export default function App() {
     setGenericColorValue(s.genericColorValue);
     setSnap(s.snap);
     setGridSettings(s.gridSettings);
-    setBoardPadding(s.boardPadding);
-    setRoundedCorners(s.roundedCorners);
-    setSoftShadow(s.softShadow);
+    setSlideMargin(s.slideMargin);
     setShowSafeMargin(s.showSafeMargin);
     setBackgroundColor(s.backgroundColor);
   };
@@ -154,9 +150,7 @@ export default function App() {
     genericColorValue,
     snap,
     gridSettings,
-    boardPadding,
-    roundedCorners,
-    softShadow,
+    slideMargin,
     showSafeMargin,
     backgroundColor,
   ]);
