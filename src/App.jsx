@@ -40,6 +40,8 @@ export default function App() {
   const [genericText, setGenericText] = React.useState('');
   const [genericColorName, setGenericColorName] = React.useState('');
   const [genericColorValue, setGenericColorValue] = React.useState('#000000');
+  const canvasWrapRef = React.useRef(null);
+  const fitZoom = React.useRef(1);
 
   const dim = format === 'A4' ? DEFAULT_A4 : DEFAULT_169;
   const [snap, setSnap] = React.useState(true);
@@ -51,6 +53,7 @@ export default function App() {
   const [showSafeMargin, setShowSafeMargin] = React.useState(false);
   const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
   const [exportFormat, setExportFormat] = React.useState('png');
+  const [zoom, setZoom] = React.useState(1);
   // History stack for undo/redo
   const history = React.useRef([]);
   const future = React.useRef([]);
@@ -80,6 +83,7 @@ export default function App() {
         slideMargin,
         showSafeMargin,
         backgroundColor,
+        zoom,
       })
     );
 
@@ -105,6 +109,7 @@ export default function App() {
     setSlideMargin(s.slideMargin);
     setShowSafeMargin(s.showSafeMargin);
     setBackgroundColor(s.backgroundColor);
+    setZoom(s.zoom ?? 1);
   };
 
   const undo = () => {
@@ -153,6 +158,7 @@ export default function App() {
     slideMargin,
     showSafeMargin,
     backgroundColor,
+    zoom,
   ]);
 
   React.useEffect(() => {
@@ -181,6 +187,19 @@ export default function App() {
     setGridSettings(rest);
     setSlideMargin(margin);
   }, [format]);
+
+  React.useEffect(() => {
+    const computeFitZoom = () => {
+      if (!canvasWrapRef.current) return;
+      const { clientWidth, clientHeight } = canvasWrapRef.current;
+      const z = Math.min(clientWidth / dim.w, clientHeight / dim.h);
+      fitZoom.current = z;
+      setZoom(prev => (prev > z ? z : prev));
+    };
+    computeFitZoom();
+    window.addEventListener('resize', computeFitZoom);
+    return () => window.removeEventListener('resize', computeFitZoom);
+  }, [dim.w, dim.h]);
 
     const addSlide = () => {
       const id = 's'+(slides.length+1);
@@ -475,7 +494,7 @@ export default function App() {
                 {colorsList.map((c,i)=>(
                   <div className="row" style={{ marginBottom:8 }} key={i}>
                     <input placeholder="Name" value={c.name} onChange={e=>updateColor(i,'name',e.target.value)} style={{ flex:1 }} />
-                    <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} />
+                    <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} style={{ width:'100%' }} />
                     <button className="btn" onClick={()=>removeColor(i)}>x</button>
                   </div>
                 ))}
@@ -538,34 +557,37 @@ export default function App() {
             >
               ▶
             </button>
-          )}
+        )}
 
-          <div className="canvasWrap">
-            {slides.map((s, i) => (
-              <div
-                key={s.id}
+        <div className="canvasWrap" ref={canvasWrapRef}>
+          {slides.map((s, i) => (
+            <div
+              key={s.id}
                 onClick={() => setActive(s.id)}
                 onDragOver={e => e.preventDefault()}
                 onDrop={onDropSlide(i)}
                 style={{ border: s.id===active?'2px solid #888':'2px solid transparent', borderRadius:10, padding:6, background:'#f0f0f0' }}
               >
-                <div
-                  className="slide"
-                  ref={el => (slideRefs.current[s.id] = el)}
-                  style={{ width: dim.w, height: dim.h }}
-                >
-                  <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
-                  <Slide
-                    blocks={s.blocks || []}
-                    grid={grid}
-                    snap={snap}
-                    slideMargin={slideMargin}
-                    showSafeMargin={showSafeMargin}
-                    backgroundColor={backgroundColor}
-                    onChange={b=>setSlideBlocks(s.id,b)}
-                    headingFont={headingFont}
-                    bodyFont={bodyFont}
-                  />
+                <div className="slideWrapper" style={{ width: dim.w * zoom, height: dim.h * zoom }}>
+                  <div
+                    className="slide"
+                    ref={el => (slideRefs.current[s.id] = el)}
+                    style={{ width: dim.w, height: dim.h, transform:`scale(${zoom})`, transformOrigin:'top left' }}
+                  >
+                    <div style={{ position:'absolute', left:16, top:12, color:'#333', fontWeight:600, fontSize:14 }}>{brandName}</div>
+                    <Slide
+                      blocks={s.blocks || []}
+                      grid={grid}
+                      snap={snap}
+                      slideMargin={slideMargin}
+                      showSafeMargin={showSafeMargin}
+                      backgroundColor={backgroundColor}
+                      onChange={b=>setSlideBlocks(s.id,b)}
+                      headingFont={headingFont}
+                      bodyFont={bodyFont}
+                      zoom={zoom}
+                    />
+                  </div>
                 </div>
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
@@ -645,6 +667,12 @@ export default function App() {
                   }
                   style={{ width:60 }}
                 />
+              </div>
+              <div className="row" style={{ marginBottom:12 }}>
+                <label style={{ width:'100%' }}>Zoom</label>
+                <input type="range" min="0.25" max="2" step="0.05" value={zoom} onChange={e=>setZoom(parseFloat(e.target.value))} />
+                <input type="number" value={zoom} step="0.05" onChange={e=>setZoom(parseFloat(e.target.value) || 1)} style={{ width:60 }} />
+                <button className="btn" onClick={() => setZoom(fitZoom.current)}>Fit</button>
               </div>
               <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
