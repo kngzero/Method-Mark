@@ -1,7 +1,5 @@
 html, body, #root { height: 100%; margin: 0; }
 body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text); }
-.btn { padding:8px 12px; background:#fff; border:1px solid #000; color:#000; border-radius:6px; cursor:pointer; }
-.btn:hover { background:#f0f0f0; }
 .header { position:fixed; top:0; left:0; right:0; background:#fff; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; padding:8px 16px; z-index:60; }
 .headerDropdown { position:absolute; z-index:50; }
 .workspace { display:flex; height:calc(100% - 52px); margin-top:52px; box-sizing:border-box; padding-left:var(--spacing-xl); padding-right:var(--spacing-xl); }
@@ -30,8 +28,6 @@ body { font-family: var(--font-sans); background: var(--color-bg); color: var(--
 .handle:hover { background:#f0f0f0; }
 .handle:focus { outline:2px solid #000; }
 .handle:active { background:#e0e0e0; }
-input[type="checkbox"], input[type="range"] { accent-color:#000; }
-input, select { border:1px solid #000; }
 .exporting .gridOverlay, .exporting .handle, .exporting .slideCanvas button { display:none !important; }
 .exporting * { outline:none !important; }
 
