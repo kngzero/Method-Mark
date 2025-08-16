@@ -1,0 +1,32 @@
+.button {
+  padding: 8px 12px;
+  border: 1px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  background: #fff;
+  color: #000;
+}
+.button:not(.disabled):hover {
+  background: #f0f0f0;
+}
+.primary {
+  background: #4F46E5;
+  border-color: #4F46E5;
+  color: #fff;
+}
+.primary:not(.disabled):hover {
+  background: #4338ca;
+}
+.secondary {
+  background: #fff;
+  border-color: #000;
+  color: #000;
+}
+.secondary:not(.disabled):hover {
+  background: #f0f0f0;
+}
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

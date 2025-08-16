@@ -5,6 +5,7 @@ import TextBox from './TextBox.jsx';
 import ImageBlock from './ImageBlock.jsx';
 import ColorSwatch from './ColorSwatch.jsx';
 import ColorPaletteBlock from './ColorPaletteBlock.jsx';
+import Button from './Button.jsx';
 import styles from './Slide.module.css';
 
 const snapPos = (v, step, margin, safeMargin, size, max) => {
@@ -206,9 +207,9 @@ export default function Slide({
         <TextBox text={block.text || block.type} fontFamily={fontFamily} onChange={text => onChange({ text })} />
       )}
       <div className="handle" onMouseDown={onResizeDown}>⤡</div>
-        <button onClick={onRemove} className={styles.removeButton}>
+        <Button onClick={onRemove} className={styles.removeButton} variant="secondary">
           ×
-        </button>
+        </Button>
       </div>
   );
 }
