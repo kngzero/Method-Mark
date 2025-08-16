@@ -1,0 +1,26 @@
+html, body, #root { height: 100%; margin: 0; }
+body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; background:#f5f5f5; color:#222; }
+.btn { padding:8px 12px; background:#fff; border:1px solid #000; color:#000; border-radius:6px; cursor:pointer; }
+.btn:hover { background:#f0f0f0; }
+.header { position:fixed; top:0; left:0; right:0; background:#fff; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; padding:8px 16px; z-index:60; }
+.headerDropdown { position:absolute; z-index:50; }
+.workspace { display:flex; height:calc(100% - 52px); margin-top:52px; }
+.canvasWrap { position:relative; flex:1; display:flex; gap:16px; padding:16px; flex-wrap:wrap; justify-content:center; overflow:auto; z-index:0; }
+.slideWrapper { width:fit-content; height:fit-content; }
+.slide { background:#fff; color:#111; border-radius:0; box-shadow: 0 0 0 1px #ccc inset; position: relative; z-index:10; }
+.side { background:#f9f9f9; padding:12px; width:220px; overflow:auto; position:fixed; top:52px; bottom:0; z-index:40; }
+.side.left { left:0; }
+.side.right { right:0; }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.small { font-size:12px; color:#aaa; }
+.statusDot { display:inline-block; width:8px; height:8px; border-radius:50%; background:#ccc; margin-left:4px; }
+.statusDot.done { background:#000; }
+.drawerOpener { width:20px; background:#f0f0f0; display:flex; align-items:center; justify-content:center; cursor:pointer; border:none; border-right:1px solid #ddd; position:fixed; top:52px; bottom:0; left:0; padding:0; z-index:40; }
+.drawerOpener.right { border-right:none; border-left:1px solid #ddd; right:0; left:auto; }
+.drawerToggle { position:absolute; top:8px; right:8px; width:24px; height:24px; background:#fff; border:1px solid #000; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; z-index:40; }
+.drawerOpener:focus, .drawerToggle:focus { outline:2px solid #000; }
+.handle { position:absolute; right:6px; bottom:6px; background:#fff; color:#333; font-size:12px; padding:2px 6px; border-radius:4px; border:1px solid #ccc; }
+input[type="checkbox"], input[type="range"] { accent-color:#000; }
+input, select { border:1px solid #000; }
+.exporting .gridOverlay, .exporting .handle, .exporting .slideCanvas button { display:none !important; }
+.exporting * { outline:none !important; }

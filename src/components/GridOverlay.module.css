@@ -1,0 +1,17 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.inner {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+}
+
+.safe {
+  position: absolute;
+  border: 2px dashed #f00;
+}

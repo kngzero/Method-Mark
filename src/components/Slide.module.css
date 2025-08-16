@@ -1,0 +1,32 @@
+.slideCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 0;
+  box-shadow: 0 0 0 1px #0003;
+}
+
+.block {
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 0 0 1px #0003, 0 8px 20px #0002;
+  z-index: 30;
+  cursor: grab;
+}
+
+.selected {
+  outline: 2px solid #2684FF;
+}
+
+.removeButton {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  background: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
