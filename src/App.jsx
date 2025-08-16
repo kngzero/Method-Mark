@@ -623,27 +623,27 @@ export default function App() {
               </button>
               <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
-                <label>Columns</label>
+                <label style={{ width:'100%' }}>Columns</label>
                 <input type="range" min="1" max="24" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label>Rows</label>
+                <label style={{ width:'100%' }}>Rows</label>
                 <input type="range" min="1" max="24" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label>Gaps</label>
+                <label style={{ width:'100%' }}>Gaps</label>
                 <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label>Slide Margins</label>
+                <label style={{ width:'100%' }}>Slide Margins</label>
                 <input type="range" min="0" max="200" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} />
                 <input type="number" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label>Safe Margin</label>
+                <label style={{ width:'100%' }}>Safe Margin</label>
                 <input
                   type="range"
                   min="0"
