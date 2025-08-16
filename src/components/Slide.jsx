@@ -27,9 +27,7 @@ export default function Slide({
   onChange,
   grid,
   snap,
-  boardPadding,
-  roundedCorners,
-  softShadow,
+  slideMargin,
   showSafeMargin,
   backgroundColor,
   headingFont,
@@ -53,11 +51,11 @@ export default function Slide({
         position: 'relative',
         width: '100%',
         height: '100%',
-        padding: boardPadding,
+        padding: slideMargin,
         boxSizing: 'border-box',
         background: backgroundColor,
-        borderRadius: roundedCorners ? 12 : 0,
-        boxShadow: softShadow ? '0 0 0 1px #0003, 0 8px 20px #0002' : '0 0 0 1px #0003'
+        borderRadius: 0,
+        boxShadow: '0 0 0 1px #0003'
       }}
     >
       {blocks.map(b => (

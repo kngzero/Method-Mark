@@ -28,7 +28,7 @@ export default function GridOverlay({ grid, showSafeMargin }) {
     border: '2px dashed #f00',
   };
   return (
-    <div style={style}>
+    <div className="gridOverlay" style={style}>
       <div style={innerStyle}></div>
       {showSafeMargin && safeMargin > 0 && <div style={safeStyle}></div>}
     </div>

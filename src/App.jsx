@@ -64,23 +64,21 @@ export default function App() {
     const { margin, ...rest } = GRID_PRESETS['A4'];
     return rest;
   });
-  const [boardPadding, setBoardPadding] = React.useState(GRID_PRESETS['A4'].margin);
-  const [roundedCorners, setRoundedCorners] = React.useState(false);
-  const [softShadow, setSoftShadow] = React.useState(false);
+  const [slideMargin, setSlideMargin] = React.useState(GRID_PRESETS['A4'].margin);
   const [showSafeMargin, setShowSafeMargin] = React.useState(false);
   const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
   const [exportFormat, setExportFormat] = React.useState('png');
   const grid = computeGrid(
     format,
-    dim.w - boardPadding * 2,
-    dim.h - boardPadding * 2,
+    dim.w - slideMargin * 2,
+    dim.h - slideMargin * 2,
     { ...gridSettings, margin: 0 }
   );
 
   React.useEffect(() => {
     const { margin, ...rest } = GRID_PRESETS[format];
     setGridSettings(rest);
-    setBoardPadding(margin);
+    setSlideMargin(margin);
   }, [format]);
 
     const addSlide = () => {
@@ -156,7 +154,9 @@ export default function App() {
   const saveImage = React.useCallback(async () => {
     const node = slideRefs.current[active];
     if (!node) return;
+    node.classList.add('exporting');
     const canvas = await html2canvas(node, { backgroundColor, scale: 2 });
+    node.classList.remove('exporting');
     const mime = exportFormat === 'jpeg' ? 'image/jpeg' : 'image/png';
     const link = document.createElement('a');
     link.download = `${brandName.replace(/\s+/g,'_')}.${exportFormat}`;
@@ -169,7 +169,9 @@ export default function App() {
     for (const s of slides) {
       const node = slideRefs.current[s.id];
       if (!node) continue;
+      node.classList.add('exporting');
       const canvas = await html2canvas(node, { backgroundColor, scale: 2 });
+      node.classList.remove('exporting');
       pages.push(canvas.toDataURL('image/png'));
     }
     // PDF size in px units
@@ -454,9 +456,7 @@ export default function App() {
                     blocks={s.blocks || []}
                     grid={grid}
                     snap={snap}
-                    boardPadding={boardPadding}
-                    roundedCorners={roundedCorners}
-                    softShadow={softShadow}
+                    slideMargin={slideMargin}
                     showSafeMargin={showSafeMargin}
                     backgroundColor={backgroundColor}
                     onChange={b=>setSlideBlocks(s.id,b)}
@@ -513,9 +513,9 @@ export default function App() {
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:80 }}>Board padding</label>
-                <input type="range" min="0" max="200" value={boardPadding} onChange={e=>setBoardPadding(parseInt(e.target.value)||0)} />
-                <input type="number" value={boardPadding} onChange={e=>setBoardPadding(parseInt(e.target.value)||0)} style={{ width:60 }} />
+                <label style={{ width:80 }}>Slide margins</label>
+                <input type="range" min="0" max="200" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} />
+                <input type="number" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
                 <label style={{ width:80 }}>Safe margin</label>
@@ -546,12 +546,7 @@ export default function App() {
               <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
-                <label><input type="checkbox" checked={roundedCorners} onChange={e=>setRoundedCorners(e.target.checked)} /> Rounded corners</label>
-              </div>
-              <div className="row" style={{ marginBottom:12 }}>
-                <label><input type="checkbox" checked={softShadow} onChange={e=>setSoftShadow(e.target.checked)} /> Soft shadow</label>
-              </div>
+              
               <div className="row" style={{ marginBottom:12 }}>
                 <label><input type="checkbox" checked={showSafeMargin} onChange={e=>setShowSafeMargin(e.target.checked)} /> Show safe margin</label>
               </div>
