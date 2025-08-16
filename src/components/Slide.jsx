@@ -198,19 +198,20 @@ function DraggableBlock({ block, onChange, onRemove, grid, snap, selected, onSel
       tabIndex={0}
       onKeyDown={onKeyDown}
       onFocus={onSelect}
-      style={{
-        position: 'absolute',
-        left: block.x,
-        top: block.y,
-        width: block.w,
-        height: block.h,
-        background: '#fff',
-        boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002',
-        cursor: 'grab',
-        outline: selected ? '2px solid #2684FF' : 'none'
-      }}
-      onMouseDown={onMouseDown}
-    >
+        style={{
+          position: 'absolute',
+          left: block.x,
+          top: block.y,
+          width: block.w,
+          height: block.h,
+          background: '#fff',
+          boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002',
+          zIndex: 30,
+          cursor: 'grab',
+          outline: selected ? '2px solid #2684FF' : 'none'
+        }}
+        onMouseDown={onMouseDown}
+      >
       {IMAGE_BLOCKS.includes(block.type) ? (
         block.url && <ImageBlock url={block.url} alt={block.type} />
       ) : block.type === 'color-swatch' ? (
