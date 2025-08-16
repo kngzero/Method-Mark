@@ -2,6 +2,9 @@ html, body, #root { height: 100%; margin: 0; }
 body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text); }
 .header { position:fixed; top:0; left:0; right:0; background:#fff; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; padding:8px 16px; z-index:60; }
 .headerDropdown { position:absolute; z-index:50; }
+.aboutDropdown { top:100%; right:0; background:#fff; border:1px solid #ddd; padding:8px 12px; width:260px; font-size:14px; }
+.aboutDropdown p { margin:0 0 4px; }
+.aboutDropdown p:last-child { margin-bottom:0; }
 .workspace { display:flex; height:calc(100% - 52px); margin-top:52px; box-sizing:border-box; padding-left:var(--spacing-xl); padding-right:var(--spacing-xl); }
 .workspace.left-open { padding-left:var(--side-width); }
 .workspace.right-open { padding-right:var(--side-width); }
