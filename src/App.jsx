@@ -454,32 +454,32 @@ export default function App() {
               <section style={{ marginBottom:16 }}>
                 <h3 style={{ margin:0, marginBottom:8 }}>Brand Basics</h3>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Brand Name <StatusDot done={autoChecks['name']} /></label>
+                  <label>Brand Name <StatusDot done={autoChecks['name']} /></label>
                   <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('name', brandName)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Tagline <StatusDot done={autoChecks['tagline']} /></label>
+                  <label>Tagline <StatusDot done={autoChecks['tagline']} /></label>
                   <input type="text" value={tagline} onChange={e=>setTagline(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('tagline', tagline)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Mission <StatusDot done={autoChecks['mission']} /></label>
+                  <label>Mission <StatusDot done={autoChecks['mission']} /></label>
                   <textarea value={mission} onChange={e=>setMission(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('mission', mission)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Vision <StatusDot done={autoChecks['vision']} /></label>
+                  <label>Vision <StatusDot done={autoChecks['vision']} /></label>
                   <input type="text" value={vision} onChange={e=>setVision(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('vision', vision)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Value <StatusDot done={autoChecks['values']} /></label>
+                  <label>Value <StatusDot done={autoChecks['values']} /></label>
                   <input type="text" value={value} onChange={e=>setValue(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('values', value)}>Add</button>
                 </div>
                 <div className="row" style={{ marginBottom:8 }}>
-                  <label style={{ width:'100%' }}>Brand Story <StatusDot done={autoChecks['story']} /></label>
+                  <label>Brand Story <StatusDot done={autoChecks['story']} /></label>
                   <textarea value={story} onChange={e=>setStory(e.target.value)} style={{ flex:1 }} />
                   <button className="btn" onClick={()=>addTextBlock('story', story)}>Add</button>
                 </div>
@@ -623,27 +623,27 @@ export default function App() {
               </button>
               <h2 style={{ marginTop:0 }}>Settings</h2>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Columns</label>
+                <label>Columns</label>
                 <input type="range" min="1" max="24" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Rows</label>
+                <label>Rows</label>
                 <input type="range" min="1" max="24" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Gaps</label>
+                <label>Gaps</label>
                 <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Slide Margins</label>
+                <label>Slide Margins</label>
                 <input type="range" min="0" max="200" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} />
                 <input type="number" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Safe Margin</label>
+                <label>Safe Margin</label>
                 <input
                   type="range"
                   min="0"
@@ -682,7 +682,7 @@ export default function App() {
                 <label><input type="checkbox" checked={showSafeMargin} onChange={e=>setShowSafeMargin(e.target.checked)} /> Show safe margin</label>
               </div>
               <div className="row" style={{ marginBottom:12 }}>
-                <label style={{ width:'100%' }}>Background</label>
+                <label>Background</label>
                 <input type="color" value={backgroundColor} onChange={e=>setBackgroundColor(e.target.value)} />
               </div>
 
