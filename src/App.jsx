@@ -1,5 +1,6 @@
 import React from 'react'
 import Slide, { createBlock } from './components/Slide.jsx'
+import Button from './components/Button.jsx'
 import { BLOCK_TYPES } from './constants.js'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
@@ -427,10 +428,10 @@ export default function App() {
               <strong>Method Mark</strong>
             </div>
             <div className="row">
-              <button className="btn" onClick={undo} disabled={history.current.length <= 1}>Undo</button>
-              <button className="btn" onClick={redo} disabled={future.current.length === 0}>Redo</button>
-              <button className="btn" onClick={addSlide}>+ Add Slide</button>
-              <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
+              <Button onClick={undo} disabled={history.current.length <= 1}>Undo</Button>
+              <Button onClick={redo} disabled={future.current.length === 0}>Redo</Button>
+              <Button onClick={addSlide}>+ Add Slide</Button>
+              <Button onClick={()=>alert('Method Mark')}>About</Button>
             </div>
           </header>
         <div className="workspace" style={{ paddingLeft:leftOpen?220:20, paddingRight:rightOpen?220:20, boxSizing:'border-box' }}>
@@ -444,107 +445,107 @@ export default function App() {
               >
                 ◀
               </button>
-              <h2 style={{ marginTop:0 }}>Content</h2>
-              <div className="row" style={{ marginBottom:12 }}>
+              <h2 className="section-title">Content</h2>
+              <div className="row mb-12">
                 <select className="btn" value={format} onChange={e=>setFormat(e.target.value)}>
                   <option value="A4">A4 (portrait)</option>
                   <option value="16x9">16×9 (landscape)</option>
                 </select>
               </div>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Brand Basics</h3>
-                <div className="row" style={{ marginBottom:8 }}>
+              <section className="mb-16">
+                <h3 className="section-title">Brand Basics</h3>
+                <div className="row mb-8">
                   <label>Brand Name <StatusDot done={autoChecks['name']} /></label>
                   <input type="text" value={brandName} onChange={e=>setBrandName(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('name', brandName)}>Add</button>
+                  <Button onClick={()=>addTextBlock('name', brandName)}>Add</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label>Tagline <StatusDot done={autoChecks['tagline']} /></label>
                   <input type="text" value={tagline} onChange={e=>setTagline(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('tagline', tagline)}>Add</button>
+                  <Button onClick={()=>addTextBlock('tagline', tagline)}>Add</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label>Mission <StatusDot done={autoChecks['mission']} /></label>
                   <textarea value={mission} onChange={e=>setMission(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('mission', mission)}>Add</button>
+                  <Button onClick={()=>addTextBlock('mission', mission)}>Add</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label>Vision <StatusDot done={autoChecks['vision']} /></label>
                   <input type="text" value={vision} onChange={e=>setVision(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('vision', vision)}>Add</button>
+                  <Button onClick={()=>addTextBlock('vision', vision)}>Add</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label>Value <StatusDot done={autoChecks['values']} /></label>
                   <input type="text" value={value} onChange={e=>setValue(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('values', value)}>Add</button>
+                  <Button onClick={()=>addTextBlock('values', value)}>Add</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label>Brand Story <StatusDot done={autoChecks['story']} /></label>
                   <textarea value={story} onChange={e=>setStory(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={()=>addTextBlock('story', story)}>Add</button>
+                  <Button onClick={()=>addTextBlock('story', story)}>Add</Button>
                 </div>
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Logo <StatusDot done={autoChecks['logo']} /></h3>
-                <button className="btn" onClick={()=>logoRef.current?.click()}>Upload</button>
+              <section className="mb-16">
+                <h3 className="section-title">Logo <StatusDot done={autoChecks['logo']} /></h3>
+                <Button onClick={()=>logoRef.current?.click()}>Upload</Button>
                 <input type="file" accept="image/*" ref={logoRef} style={{ display:'none' }} onChange={onLogoFile} />
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Colors <StatusDot done={autoChecks['colors']} /></h3>
+              <section className="mb-16">
+                <h3 className="section-title">Colors <StatusDot done={autoChecks['colors']} /></h3>
                 {colorsList.map((c,i)=>(
-                  <div className="row" style={{ marginBottom:8 }} key={i}>
+                  <div className="row mb-8" key={i}>
                     <input placeholder="Name" value={c.name} onChange={e=>updateColor(i,'name',e.target.value)} style={{ flex:1 }} />
                     <input placeholder="#000000" value={c.value} onChange={e=>updateColor(i,'value',e.target.value)} style={{ width:'100%' }} />
-                    <button className="btn" onClick={()=>removeColor(i)}>x</button>
+                    <Button onClick={()=>removeColor(i)}>x</Button>
                   </div>
                 ))}
-                <button className="btn" onClick={addColorRow}>+ Add Color</button>
-                <button className="btn" style={{ marginTop:8 }} onClick={addColorsBlock}>Add Colors Block</button>
+                <Button onClick={addColorRow}>+ Add Color</Button>
+                <Button className="mt-8" onClick={addColorsBlock}>Add Colors Block</Button>
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Typography <StatusDot done={autoChecks['typography']} /></h3>
-                <div className="row" style={{ marginBottom:8 }}>
+              <section className="mb-16">
+                <h3 className="section-title">Typography <StatusDot done={autoChecks['typography']} /></h3>
+                <div className="row mb-8">
                   <label style={{ width:90 }}>Heading Font</label>
                   <input value={headingFont} onChange={e=>{setHeadingFont(e.target.value); loadFont(e.target.value);}} style={{ flex:1 }} />
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label style={{ width:90 }}>Body Font</label>
                   <input value={bodyFont} onChange={e=>{setBodyFont(e.target.value); loadFont(e.target.value);}} style={{ flex:1 }} />
                 </div>
-                <button className="btn" onClick={addTypographyBlock}>Add Typography Block</button>
+                <Button onClick={addTypographyBlock}>Add Typography Block</Button>
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Imagery & Iconography</h3>
-                <div className="row" style={{ marginBottom:8 }}>
-                  <button className="btn" onClick={()=>imageryRef.current?.click()}>Add Imagery</button>
+              <section className="mb-16">
+                <h3 className="section-title">Imagery & Iconography</h3>
+                <div className="row mb-8">
+                  <Button onClick={()=>imageryRef.current?.click()}>Add Imagery</Button>
                   <input type="file" accept="image/*" ref={imageryRef} style={{ display:'none' }} onChange={onImageryFile} />
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
-                  <button className="btn" onClick={()=>iconRef.current?.click()}>Add Icon</button>
+                <div className="row mb-8">
+                  <Button onClick={()=>iconRef.current?.click()}>Add Icon</Button>
                   <input type="file" accept="image/*" ref={iconRef} style={{ display:'none' }} onChange={onIconFile} />
                 </div>
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Voice & Tone <StatusDot done={autoChecks['voice & tone']} /></h3>
-                <textarea value={voiceTone} onChange={e=>setVoiceTone(e.target.value)} style={{ width:'100%', marginBottom:8 }} />
-                <button className="btn" onClick={addVoiceToneBlock}>Add</button>
+              <section className="mb-16">
+                <h3 className="section-title">Voice & Tone <StatusDot done={autoChecks['voice & tone']} /></h3>
+                <textarea value={voiceTone} onChange={e=>setVoiceTone(e.target.value)} className="mb-8" style={{ width:'100%' }} />
+                <Button onClick={addVoiceToneBlock}>Add</Button>
               </section>
-              <section style={{ marginBottom:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Generic Components</h3>
-                <div className="row" style={{ marginBottom:8 }}>
+              <section className="mb-16">
+                <h3 className="section-title">Generic Components</h3>
+                <div className="row mb-8">
                   <input placeholder="Text" value={genericText} onChange={e=>setGenericText(e.target.value)} style={{ flex:1 }} />
-                  <button className="btn" onClick={addGenericTextBlock}>Add Text</button>
+                  <Button onClick={addGenericTextBlock}>Add Text</Button>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <label className="btn" style={{ flex:1, textAlign:'center' }}>
                     Add Image
                     <input type="file" accept="image/*" ref={genericImageRef} style={{ display:'none' }} onChange={onGenericImage} />
                   </label>
                 </div>
-                <div className="row" style={{ marginBottom:8 }}>
+                <div className="row mb-8">
                   <input placeholder="Label" value={genericColorName} onChange={e=>setGenericColorName(e.target.value)} style={{ flex:1 }} />
                   <input type="color" value={genericColorValue} onChange={e=>setGenericColorValue(e.target.value)} />
-                  <button className="btn" onClick={addGenericSwatch}>Add Swatch</button>
+                  <Button onClick={addGenericSwatch}>Add Swatch</Button>
                 </div>
               </section>
             </aside>
@@ -592,19 +593,18 @@ export default function App() {
                 <div className="row" style={{ justifyContent:'space-between', marginTop:6 }}>
                   <span className="small">Slide: {s.id}</span>
                   <div className="row" style={{ gap:4 }}>
-                    <button
-                      className="btn"
+                    <Button
                       draggable
                       onDragStart={onDragStartSlide(i)}
                       aria-label="Drag to reorder"
                       style={{ cursor:'grab' }}
                     >
                       ☰
-                    </button>
-                    <button className="btn" onClick={()=>moveSlideUp(i)} aria-label="Move slide up">↑</button>
-                    <button className="btn" onClick={()=>moveSlideDown(i)} aria-label="Move slide down">↓</button>
-                    <button className="btn" onClick={()=>duplicateSlide(s)}>Duplicate</button>
-                    <button className="btn" onClick={() => deleteSlide(s.id)}>Delete</button>
+                    </Button>
+                    <Button onClick={()=>moveSlideUp(i)} aria-label="Move slide up">↑</Button>
+                    <Button onClick={()=>moveSlideDown(i)} aria-label="Move slide down">↓</Button>
+                    <Button onClick={()=>duplicateSlide(s)}>Duplicate</Button>
+                    <Button onClick={() => deleteSlide(s.id)}>Delete</Button>
                   </div>
                 </div>
               </div>
@@ -621,28 +621,28 @@ export default function App() {
               >
                 ▶
               </button>
-              <h2 style={{ marginTop:0 }}>Settings</h2>
-              <div className="row" style={{ marginBottom:12 }}>
+              <h2 className="section-title">Settings</h2>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Columns</label>
                 <input type="range" min="1" max="24" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.cols} onChange={e=>setGridSettings({...gridSettings, cols:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Rows</label>
                 <input type="range" min="1" max="24" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} />
                 <input type="number" value={gridSettings.rows} onChange={e=>setGridSettings({...gridSettings, rows:parseInt(e.target.value)||1})} style={{ width:60 }} />
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Gaps</label>
                 <input type="range" min="0" max="100" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} />
                 <input type="number" value={gridSettings.gutter} onChange={e=>setGridSettings({...gridSettings, gutter:parseInt(e.target.value)||0})} style={{ width:60 }} />
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Slide Margins</label>
                 <input type="range" min="0" max="200" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} />
                 <input type="number" value={slideMargin} onChange={e=>setSlideMargin(parseInt(e.target.value)||0)} style={{ width:60 }} />
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Safe Margin</label>
                 <input
                   type="range"
@@ -668,28 +668,28 @@ export default function App() {
                   style={{ width:60 }}
                 />
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label style={{ width:'100%' }}>Zoom</label>
                 <input type="range" min="0.25" max="2" step="0.05" value={zoom} onChange={e=>setZoom(parseFloat(e.target.value))} />
                 <input type="number" value={zoom} step="0.05" onChange={e=>setZoom(parseFloat(e.target.value) || 1)} style={{ width:60 }} />
-                <button className="btn" onClick={() => setZoom(fitZoom.current)}>Fit</button>
+                <Button onClick={() => setZoom(fitZoom.current)}>Fit</Button>
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label><input type="checkbox" checked={snap} onChange={e=>setSnap(e.target.checked)} /> Snap to grid</label>
               </div>
               
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label><input type="checkbox" checked={showSafeMargin} onChange={e=>setShowSafeMargin(e.target.checked)} /> Show safe margin</label>
               </div>
-              <div className="row" style={{ marginBottom:12 }}>
+              <div className="row mb-12">
                 <label>Background</label>
                 <input type="color" value={backgroundColor} onChange={e=>setBackgroundColor(e.target.value)} />
               </div>
 
               <section style={{ marginTop:24 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Project</h3>
+                <h3 className="section-title">Project</h3>
                 <div className="row" style={{ gap:8 }}>
-                  <button className="btn" onClick={saveJSON}>Save</button>
+                  <Button onClick={saveJSON}>Save</Button>
                   <label className="btn">
                     Load
                     <input type="file" accept="application/json" style={{ display:'none' }} onChange={e=>e.target.files[0] && loadJSON(e.target.files[0])} />
@@ -698,15 +698,15 @@ export default function App() {
               </section>
 
               <section style={{ marginTop:16 }}>
-                <h3 style={{ margin:0, marginBottom:8 }}>Export</h3>
-                <div className="row" style={{ marginBottom:8, gap:8 }}>
+                <h3 className="section-title">Export</h3>
+                <div className="row mb-8" style={{ gap:8 }}>
                   <select className="btn" value={exportFormat} onChange={e=>setExportFormat(e.target.value)} style={{ flex:1 }}>
                     <option value="png">PNG</option>
                     <option value="jpeg">JPEG</option>
                   </select>
-                  <button className="btn" onClick={saveImage}>Save</button>
+                  <Button onClick={saveImage}>Save</Button>
                 </div>
-                <button className="btn" onClick={exportPDF}>Save as PDF</button>
+                <Button onClick={exportPDF}>Save as PDF</Button>
               </section>
             </aside>
           ) : (
