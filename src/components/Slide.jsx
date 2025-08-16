@@ -5,6 +5,7 @@ import TextBox from './TextBox.jsx';
 import ImageBlock from './ImageBlock.jsx';
 import ColorSwatch from './ColorSwatch.jsx';
 import ColorPaletteBlock from './ColorPaletteBlock.jsx';
+import styles from './Slide.module.css';
 
 const snapPos = (v, step, margin, safeMargin, size, max) => {
   const snapped = Math.round((v - margin) / step) * step + margin;
@@ -45,20 +46,11 @@ export default function Slide({
   };
 
   return (
-    <div
-      className="slideCanvas"
-      onMouseDown={e => { if (e.target === e.currentTarget) setSelectedId(null); }}
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: '100%',
-        padding: slideMargin,
-        boxSizing: 'border-box',
-        background: backgroundColor,
-        borderRadius: 0,
-        boxShadow: '0 0 0 1px #0003'
-      }}
-    >
+      <div
+        className={`slideCanvas ${styles.slideCanvas}`}
+        onMouseDown={e => { if (e.target === e.currentTarget) setSelectedId(null); }}
+        style={{ padding: slideMargin, background: backgroundColor }}
+      >
         {blocks.map(b => (
           <DraggableBlock
             key={b.id}
@@ -195,23 +187,13 @@ export default function Slide({
   });
 
   return (
-    <div
-      ref={ref}
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-      onFocus={onSelect}
-        style={{
-          position: 'absolute',
-          left: block.x,
-          top: block.y,
-          width: block.w,
-          height: block.h,
-          background: '#fff',
-          boxShadow: '0 0 0 1px #0003, 0 8px 20px #0002',
-          zIndex: 30,
-          cursor: 'grab',
-          outline: selected ? '2px solid #2684FF' : 'none'
-        }}
+      <div
+        ref={ref}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        onFocus={onSelect}
+        className={`${styles.block} ${selected ? styles.selected : ''}`}
+        style={{ left: block.x, top: block.y, width: block.w, height: block.h }}
         onMouseDown={onMouseDown}
       >
       {IMAGE_BLOCKS.includes(block.type) ? (
@@ -224,13 +206,10 @@ export default function Slide({
         <TextBox text={block.text || block.type} fontFamily={fontFamily} onChange={text => onChange({ text })} />
       )}
       <div className="handle" onMouseDown={onResizeDown}>⤡</div>
-      <button
-        onClick={onRemove}
-        style={{ position: 'absolute', right: 6, top: 6, background: '#eee', color: '#333', border: '1px solid #ccc', borderRadius: 4, padding: '2px 6px', cursor: 'pointer' }}
-      >
-        ×
-      </button>
-    </div>
+        <button onClick={onRemove} className={styles.removeButton}>
+          ×
+        </button>
+      </div>
   );
 }
 
