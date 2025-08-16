@@ -434,9 +434,9 @@ export default function App() {
               <Button onClick={()=>alert('Method Mark')}>About</Button>
             </div>
           </header>
-        <div className="workspace" style={{ paddingLeft:leftOpen?220:20, paddingRight:rightOpen?220:20, boxSizing:'border-box' }}>
+        <div className={`workspace responsive${leftOpen ? ' left-open' : ''}${rightOpen ? ' right-open' : ''}`}>
           {leftOpen ? (
-            <aside className="side left">
+            <aside className="side left responsive">
               <button
                 type="button"
                 className="drawerToggle"
@@ -612,7 +612,7 @@ export default function App() {
           </div>
 
           {rightOpen ? (
-            <aside className="side right">
+            <aside className="side right responsive">
               <button
                 type="button"
                 className="drawerToggle"
