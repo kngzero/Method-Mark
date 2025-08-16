@@ -5,6 +5,7 @@ import { BLOCK_TYPES } from './constants.js'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { GRID_PRESETS, computeGrid } from './utils/grid.js'
+import pkg from '../package.json' assert { type: 'json' };
 
 function StatusDot({ done }) {
   return <span className={`statusDot${done ? ' done' : ''}`} />;
@@ -55,6 +56,7 @@ export default function App() {
   const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
   const [exportFormat, setExportFormat] = React.useState('png');
   const [zoom, setZoom] = React.useState(1);
+  const [showAbout, setShowAbout] = React.useState(false);
   // History stack for undo/redo
   const history = React.useRef([]);
   const future = React.useRef([]);
@@ -431,7 +433,17 @@ export default function App() {
               <Button onClick={undo} disabled={history.current.length <= 1}>Undo</Button>
               <Button onClick={redo} disabled={future.current.length === 0}>Redo</Button>
               <Button onClick={addSlide}>+ Add Slide</Button>
-              <Button onClick={()=>alert('Method Mark')}>About</Button>
+              <div style={{ position: 'relative' }}>
+                <Button onClick={() => setShowAbout(!showAbout)}>?</Button>
+                {showAbout && (
+                  <div className="headerDropdown aboutDropdown">
+                    <p><strong>App Name:</strong> Method Mark</p>
+                    <p><strong>Description:</strong> A lightweight React app to assemble brand boards and export a multi-page PDF in A4 or 16×9.</p>
+                    <p><strong>Created by:</strong> <a href="https://methodlab.ca" target="_blank" rel="noopener noreferrer">Method Lab</a></p>
+                    <p><strong>Version:</strong> {pkg.version}</p>
+                  </div>
+                )}
+              </div>
             </div>
           </header>
         <div className={`workspace responsive${leftOpen ? ' left-open' : ''}${rightOpen ? ' right-open' : ''}`}>
