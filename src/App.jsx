@@ -30,23 +30,6 @@ export default function App() {
   const [slides, setSlides] = React.useState([
     { id:'s1', blocks: [] }
   ]);
-  // undo/redo stub
-  const undoStack = React.useRef([]);
-  const redoStack = React.useRef([]);
-  const undo = () => {
-    const prev = undoStack.current.pop();
-    if (prev) {
-      redoStack.current.push(slides);
-      setSlides(prev);
-    }
-  };
-  const redo = () => {
-    const next = redoStack.current.pop();
-    if (next) {
-      undoStack.current.push(slides);
-      setSlides(next);
-    }
-  };
   const [active, setActive] = React.useState('s1');
   const slideRefs = React.useRef({});
   const logoRef = React.useRef(null);
@@ -70,6 +53,130 @@ export default function App() {
   const [showSafeMargin, setShowSafeMargin] = React.useState(false);
   const [backgroundColor, setBackgroundColor] = React.useState('#ffffff');
   const [exportFormat, setExportFormat] = React.useState('png');
+  // History stack for undo/redo
+  const history = React.useRef([]);
+  const future = React.useRef([]);
+  const restoring = React.useRef(false);
+
+  const getSnapshot = () =>
+    JSON.parse(
+      JSON.stringify({
+        format,
+        brandName,
+        tagline,
+        mission,
+        vision,
+        value,
+        story,
+        headingFont,
+        bodyFont,
+        colorsList,
+        slides,
+        active,
+        voiceTone,
+        genericText,
+        genericColorName,
+        genericColorValue,
+        snap,
+        gridSettings,
+        boardPadding,
+        roundedCorners,
+        softShadow,
+        showSafeMargin,
+        backgroundColor,
+      })
+    );
+
+  const restore = (s) => {
+    setFormat(s.format);
+    setBrandName(s.brandName);
+    setTagline(s.tagline);
+    setMission(s.mission);
+    setVision(s.vision);
+    setValue(s.value);
+    setStory(s.story);
+    setHeadingFont(s.headingFont);
+    setBodyFont(s.bodyFont);
+    setColorsList(s.colorsList);
+    setSlides(s.slides);
+    setActive(s.active);
+    setVoiceTone(s.voiceTone);
+    setGenericText(s.genericText);
+    setGenericColorName(s.genericColorName);
+    setGenericColorValue(s.genericColorValue);
+    setSnap(s.snap);
+    setGridSettings(s.gridSettings);
+    setBoardPadding(s.boardPadding);
+    setRoundedCorners(s.roundedCorners);
+    setSoftShadow(s.softShadow);
+    setShowSafeMargin(s.showSafeMargin);
+    setBackgroundColor(s.backgroundColor);
+  };
+
+  const undo = () => {
+    if (history.current.length <= 1) return;
+    const current = history.current.pop();
+    future.current.push(current);
+    const prev = history.current[history.current.length - 1];
+    restoring.current = true;
+    restore(prev);
+  };
+
+  const redo = () => {
+    const next = future.current.pop();
+    if (!next) return;
+    history.current.push(next);
+    restoring.current = true;
+    restore(next);
+  };
+
+  React.useEffect(() => {
+    if (restoring.current) {
+      restoring.current = false;
+      return;
+    }
+    history.current.push(getSnapshot());
+    future.current = [];
+  }, [
+    format,
+    brandName,
+    tagline,
+    mission,
+    vision,
+    value,
+    story,
+    headingFont,
+    bodyFont,
+    colorsList,
+    slides,
+    active,
+    voiceTone,
+    genericText,
+    genericColorName,
+    genericColorValue,
+    snap,
+    gridSettings,
+    boardPadding,
+    roundedCorners,
+    softShadow,
+    showSafeMargin,
+    backgroundColor,
+  ]);
+
+  React.useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        undo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   const grid = computeGrid(
     format,
     dim.w - boardPadding * 2,
@@ -300,15 +407,17 @@ export default function App() {
 
     return (
       <div className="app">
-        <header className="header">
-          <div className="row" style={{ gap:12 }}>
-            <strong>Method Mark</strong>
-          </div>
-          <div className="row">
-            <button className="btn" onClick={addSlide}>+ Add Slide</button>
-            <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
-          </div>
-        </header>
+          <header className="header">
+            <div className="row" style={{ gap:12 }}>
+              <strong>Method Mark</strong>
+            </div>
+            <div className="row">
+              <button className="btn" onClick={undo} disabled={history.current.length <= 1}>Undo</button>
+              <button className="btn" onClick={redo} disabled={future.current.length === 0}>Redo</button>
+              <button className="btn" onClick={addSlide}>+ Add Slide</button>
+              <button className="btn" onClick={()=>alert('Method Mark')}>About</button>
+            </div>
+          </header>
         <div className="workspace" style={{ paddingLeft:leftOpen?220:20, paddingRight:rightOpen?220:20, boxSizing:'border-box' }}>
           {leftOpen ? (
             <aside className="side left">
