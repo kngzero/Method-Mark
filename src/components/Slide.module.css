@@ -15,6 +15,18 @@
   cursor: grab;
 }
 
+.block:hover {
+  box-shadow: 0 0 0 1px #0006, 0 8px 20px #0003;
+}
+
+.block:focus {
+  outline: 2px solid #2684FF;
+}
+
+.block:active {
+  cursor: grabbing;
+}
+
 .selected {
   outline: 2px solid #2684FF;
 }
@@ -29,4 +41,16 @@
   border-radius: 4px;
   padding: 2px 6px;
   cursor: pointer;
+}
+
+.removeButton:hover {
+  background: #ddd;
+}
+
+.removeButton:focus {
+  outline: 2px solid #2684FF;
+}
+
+.removeButton:active {
+  background: #ccc;
 }

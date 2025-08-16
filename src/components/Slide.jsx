@@ -206,8 +206,20 @@ export default function Slide({
       ) : (
         <TextBox text={block.text || block.type} fontFamily={fontFamily} onChange={text => onChange({ text })} />
       )}
-      <div className="handle" onMouseDown={onResizeDown}>⤡</div>
-        <Button onClick={onRemove} className={styles.removeButton} variant="secondary">
+      <button
+        type="button"
+        className="handle"
+        aria-label="Resize block"
+        onMouseDown={onResizeDown}
+      >
+        ⤡
+      </button>
+        <Button
+          onClick={onRemove}
+          className={styles.removeButton}
+          variant="secondary"
+          aria-label="Remove block"
+        >
           ×
         </Button>
       </div>
